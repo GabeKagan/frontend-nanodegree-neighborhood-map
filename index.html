@@ -20,9 +20,13 @@
         <!--Knockout.js related stuff probably goes here-->
         <div id="searchbar">
             <br/> 
-            <p>Search for: <input data-bind "value: searchPrompt" /> </p>
+            <p>Search for (this is a filter): <input data-bind "value: searchPrompt" /> </p>
             <!--type="text" name="searchPrompt"-->
             <input type="submit" value="Submit">
+        </div>
+        <div id="locationListDisplay"><p>Put the list (#6) here</p>
+            <p data-bind="text: test">This gets removed by the code.</p>
+            <p data-bind="text: test2">This gets removed by the code.</p>
         </div>
 
 
