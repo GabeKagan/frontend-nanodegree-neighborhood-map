@@ -27,6 +27,9 @@
         <div id="locationListDisplay"><p>Put the list (#6) here</p>
             <p data-bind="text: test">This gets removed by the code.</p>
             <p data-bind="text: test2">This gets removed by the code.</p>
+            <p> How do you get which option was clicked? option.selected or something
+                <select multiple="multiple" width="50" data-bind="options:HTMLLocs, click:showCorrespondingMarker(HTMLLocs)"></select>
+            </p>
         </div>
 
 

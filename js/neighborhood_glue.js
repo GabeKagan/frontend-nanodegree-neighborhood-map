@@ -6,12 +6,10 @@ Other stuff
 
 #5: Gotta find out what we're searching for, first. 
 #6: List of locations could probably be implemented by Knockout MVC logic. 
+
+Possible function for later: Perform "traveling salesman" algorithm on user selected locations to find
+the shortest route between all of them.
 */
-
-
-var locationList = [];
-
-var map = "";
 
 //Constructs stuff that'll get put in locationList.
 //If we get this from Google Maps API requests, that might help out a bit.
@@ -22,6 +20,17 @@ var neighborhoodLocation = function(name, lat, lng, contentString) {
     self.lng = lng;
     self.contentString = contentString;
 }
+
+//Create a function that converts Google Maps API data into these?
+var locationList = [
+    new neighborhoodLocation("Ginger Tree", 42.627021, -71.415069, "Blah blah food"),
+    new neighborhoodLocation("J. V. Fletcher Library", 42.5670675, -71.4476384, "Hurp durp books"),
+    new neighborhoodLocation("Henry Fletcher House",42.551111,-71.4275,"Frankly, I don't know anything about this place."),
+];
+
+var map = "";
+
+
 
 //Knockoutify this?
 var addMarker = function(neighborhoodLocation) {
@@ -50,28 +59,41 @@ function initialize() {
         center: { lat: 42.5792, lng: -71.4383},
         zoom: 12
         };
+
     map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
 
-    //Make a function that assembles new locations based on some sort of API request.
-    locationList[0] = new neighborhoodLocation("Ginger Tree", 42.627021, -71.415069, "Blah blah food");
-    locationList[1] = new neighborhoodLocation("J. V. Fletcher Library", 42.5670675, -71.4476384, "Hurp durp books");
-    console.log(locationList);
-    //Add more things to the markers. 
+    //Turn this into a Knockout observable array, and use a push function to add further stuff?
+    //Add more things to the markers.
+    //Displays the markers. Move into SearchViewModel?
     for(var i=0;i<locationList.length;++i)
     {
         addMarker(locationList[i]);
-    }   
+    }
 
 }
 
 //This is the controller?
 function SearchViewModel() {
     var self = this;
-    this.test = ko.observable("Use this controller function to grab all the data from the array locationList");
-    this.test2 = ko.observable("Then use HTML/JS to print it out here.");
-    this.searchPrompt = ko.observable("Test");
+    self.test = ko.observable("Use this controller function to grab all the data from the array locationList");
+    self.test2 = ko.observable("Then use HTML/JS to print it out here.");
+    self.searchPrompt = ko.observable("Test");
+
+    this.HTMLLocs = ko.observableArray();
+    //Print locationList to the HTML. This doesn't TECHNICALLY need to be functionalized.
+    //The way the applet is built now, you don't add new locations.
+    for(var i=0;i<locationList.length;++i)
+    {
+        this.HTMLLocs.push(locationList[i].name);
+    }
+   
 }
 
+function showCorrespondingMarker(data) {
+    //This returns a DOM element, but not specific enough.
+    var clickResult = data;
+    console.log(clickResult);
+}
 
 jQuery(function( $ ) {
     google.maps.event.addDomListener(window, 'load', initialize);
