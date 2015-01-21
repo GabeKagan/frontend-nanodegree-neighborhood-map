@@ -19,6 +19,11 @@ var neighborhoodLocation = function(name, lat, lng, contentString) {
     self.lat = lat;
     self.lng = lng;
     self.contentString = contentString;
+
+    self.locationMarker = new google.maps.Marker({
+        title: this.name,
+        position: {lat: this.lat, lng: this.lng,},
+    });
 }
 
 //Create a function that converts Google Maps API data into these?
@@ -30,19 +35,14 @@ var locationList = [
 
 var map = "";
 
-
-
-//Knockoutify this?
+//Knockoutify this? More importantly, make this a method of neighborhoodLocation?
 var addMarker = function(neighborhoodLocation) {
 
     this.name = neighborhoodLocation.name;
     this.lat = neighborhoodLocation.lat;
     this.lng = neighborhoodLocation.lng;
+    this.locationMarker = neighborhoodLocation.locationMarker;
     
-    var locationMarker = new google.maps.Marker({
-        title: this.name,
-        position: {lat: this.lat, lng: this.lng,},
-    });
     locationMarker.setMap(map);
 
     var infowindow = new google.maps.InfoWindow({
@@ -89,10 +89,20 @@ function SearchViewModel() {
    
 }
 
-function showCorrespondingMarker(data) {
-    //This returns a DOM element, but not specific enough.
-    var clickResult = data;
-    console.log(clickResult);
+function showCorrespondingMarker() {
+    //This returns a DOM element, but we should be using Knockout's native methods if we can.
+    var optionMarker = document.getElementById("locationOptions").value;
+    //Get the corresponding index in our list of Google locations, using some prototype.map trickery.
+    //Won't work in legacy browsers like IE8.
+    var selectedMarker = locationList.map(function(e) { return e.name}).indexOf(optionMarker);
+
+    //Makes the marker corresponding to our option bounce for 1.5 seconds.
+    if(selectedMarker != -1) {
+        locationList[selectedMarker].locationMarker.setAnimation(google.maps.Animation.BOUNCE);
+        setTimeout( function() {
+            locationList[selectedMarker].locationMarker.setAnimation(google.maps.Animation.NULL);
+            }, 1500); 
+    }
 }
 
 jQuery(function( $ ) {
