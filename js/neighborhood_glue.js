@@ -110,11 +110,12 @@ function showCorrespondingMarker() {
     //Won't work in legacy browsers like IE8.
     var selectedMarker = locationList.map(function(e) { return e.name}).indexOf(optionMarker);
 
-    //Turns the corresponding marker blue (Initially green, but colorblind people would complain).
-    //Maybe we should center the camera on these?
-    //Base on this reference: http://stackoverflow.com/questions/2818984/google-map-api-v3-center-zoom-on-displayed-markers
+    /* Centers the camera and turns the corresponding marker blue (Initially green, but colorblind people would complain).
+    Got some info from http://stackoverflow.com/questions/2818984/google-map-api-v3-center-zoom-on-displayed-markers; it might be irrelevant now.
+    */
     if(selectedMarker != -1) {
         locationList[selectedMarker].locationMarker.setIcon('http://maps.google.com/mapfiles/ms/icons/blue-dot.png');
+        map.setCenter({lat:locationList[selectedMarker].lat, lng:locationList[selectedMarker].lng});
     }
 }
 
