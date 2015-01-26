@@ -20,11 +20,14 @@
         <!--Knockout.js related stuff probably goes here-->
         <div id="searchbar">
             <br/> 
-            <input placeholder="Search…" type="search" data-bind="value: searchPrompt, valueUpdate: 'keyup'" autocomplete="off">
+            <p>Type here to search the list of marked locations:
+            <input placeholder = "Location" type="search" data-bind="value: searchPrompt, valueUpdate: 'input'" autocomplete="off">
+            </p>
         </div>
         <div id="locationListDisplay">
             <select id="locationOptions" multiple="multiple" width="50" data-bind="options:HTMLLocs, click:showCorrespondingMarker()"></select>
         </div>
+        <!--Template for the search function under construction-->
 
 
   </body>

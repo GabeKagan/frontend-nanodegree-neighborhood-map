@@ -1,12 +1,4 @@
-/*Model requirements:
-
-Name of location
-GPS coords of location
-Other stuff
-
-#5: Gotta find out what we're searching for, first. 
-#6: List of locations could probably be implemented by Knockout MVC logic. 
-
+/*
 Possible function for later: Perform "traveling salesman" algorithm on user selected locations to find
 the shortest route between all of them.
 */
@@ -24,10 +16,11 @@ var neighborhoodLocation = function(name, lat, lng, contentString) {
     self.lng = lng;
     self.contentString = contentString;
 
-    //Now for variables derived from the initial set.
+    //Now for variables derived from the initial ones, and from other sources.
     self.locationMarker = new google.maps.Marker({
         title: this.name,
         position: {lat: this.lat, lng: this.lng,},
+        icon: "http://maps.google.com/mapfiles/ms/icons/red-dot.png",
     });
     self.infoWindow = new google.maps.InfoWindow({
         content: neighborhoodLocation.contentString,
@@ -71,7 +64,7 @@ function initialize() {
 
     //Turn this into a Knockout observable array, and use a push function to add further stuff?
     //Add more things to the markers.
-    //Displays the markers. Move into SearchViewModel?
+    //Displays the markers and populates the HTML list. 
     for(var i=0;i<locationList.length;++i)
     {
         addMarker(locationList[i]);
@@ -83,34 +76,45 @@ function initialize() {
 
 }
 
-//This is the controller?
+//This might need to be merged into a "controller" with showCorrespondingMarker below.
+//Implementation cribbed from http://opensoul.org/2011/06/23/live-search-with-knockoutjs/
 var SearchViewModel = {
     searchPrompt: ko.observable(""),
-    //searchPrompt = ko.observable("");
     HTMLLocs: ko.observableArray(),
-    //Print locationList to the HTML. This doesn't TECHNICALLY need to be functionalized.
     //The way the applet is built now, you don't add new locations.
-    filterLocations: function() {
-        console.log("Clack");
-    }
-   
+    search: function(value){
+        console.log(value);
+        //Only attempt the "live" search if there's some text in the field.
+        if(value != "") {
+            for(var x in locationList)
+            {
+                //The actual search here. If we find anything, print it to the page.
+                if(locationList[x].name.toLowerCase().indexOf(value.toLowerCase()) >= 0){
+                    
+                }
+            }
+        }
+    },
 }
 
 function showCorrespondingMarker() {
-    //This returns a DOM element, but we should be using Knockout's native methods if we can.
+    //First, reset the marker coloration.
+    for(var x in locationList)
+    {
+        locationList[x].locationMarker.setIcon('http://maps.google.com/mapfiles/ms/icons/red-dot.png');
+    }
+
+    //This returns a DOM element, but rewrite it to use KnockoutJS's methods.
     var optionMarker = document.getElementById("locationOptions").value;
     //Get the corresponding index in our list of Google locations, using some prototype.map trickery.
     //Won't work in legacy browsers like IE8.
     var selectedMarker = locationList.map(function(e) { return e.name}).indexOf(optionMarker);
 
-    //Makes the marker corresponding to our option bounce for 1.5 seconds.
+    //Turns the corresponding marker blue (Initially green, but colorblind people would complain).
     //Maybe we should center the camera on these?
     //Base on this reference: http://stackoverflow.com/questions/2818984/google-map-api-v3-center-zoom-on-displayed-markers
     if(selectedMarker != -1) {
-        locationList[selectedMarker].locationMarker.setAnimation(google.maps.Animation.BOUNCE);
-        setTimeout( function() {
-            locationList[selectedMarker].locationMarker.setAnimation(google.maps.Animation.NULL);
-            }, 1500); 
+        locationList[selectedMarker].locationMarker.setIcon('http://maps.google.com/mapfiles/ms/icons/blue-dot.png');
     }
 }
 
@@ -118,5 +122,5 @@ function showCorrespondingMarker() {
 jQuery(function( $ ) {
     google.maps.event.addDomListener(window, 'load', initialize);
     ko.applyBindings(SearchViewModel);
-    SearchViewModel.searchPrompt.subscribe(SearchViewModel.filterLocations);
+    SearchViewModel.searchPrompt.subscribe(SearchViewModel.search);
 });
