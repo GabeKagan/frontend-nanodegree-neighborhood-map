@@ -28,6 +28,14 @@
             <select id="locationOptions" multiple="multiple" width="50" data-bind="options:HTMLLocs, click:showCorrespondingMarker()"></select>
         </div>
         <!--Template for the search function under construction-->
+        <ul data-bind="template: {name:'filteredLocations', foreach:'searchFilter'}"></ul>
+        <script type="text/html" id="filteredLocations">
+            <li>
+                <strong data-bind="text:name"></strong>
+            </li>
+        </script>
+
+   
 
 
   </body>
