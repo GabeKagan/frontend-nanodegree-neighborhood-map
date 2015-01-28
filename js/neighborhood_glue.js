@@ -3,9 +3,12 @@ Possible function for later: Perform "traveling salesman" algorithm on user sele
 the shortest route between all of them.
 */
 
-
+//Globals.
 var map = "";
 var searchPrompt = "";
+var contentWindow = new google.maps.InfoWindow({
+    content: "Debug",
+});
 
 //Constructs stuff that'll get put in locationList.
 //If we get this from Google Maps API requests, that might help out a bit.
@@ -22,9 +25,7 @@ var neighborhoodLocation = function(name, lat, lng, contentString) {
         position: {lat: this.lat, lng: this.lng,},
         icon: "http://maps.google.com/mapfiles/ms/icons/red-dot.png",
     });
-    self.infoWindow = new google.maps.InfoWindow({
-        content: neighborhoodLocation.contentString,
-    });
+
 }
 
 //Create a function that converts Google Maps API data into these?
@@ -43,14 +44,21 @@ var addMarker = function(neighborhoodLocation) {
     this.lat = neighborhoodLocation.lat;
     this.lng = neighborhoodLocation.lng;
     this.locationMarker = neighborhoodLocation.locationMarker;
-    this.infoWindow = neighborhoodLocation.infoWindow;
     
     locationMarker.setMap(map);
-
-    //These are not working. They display a malformed InfoWindow in an incorrect location.
     google.maps.event.addListener(locationMarker, 'click', function() {
-        infoWindow.open(map, locationMarker);
+        moveWindow(neighborhoodLocation); 
     });
+}
+
+//moveWindow gets the content and position from the location, and attaches to the marker.
+function moveWindow(neighborhoodLocation) {
+    this.contentString = neighborhoodLocation.contentString;
+    this.locationMarker = neighborhoodLocation.locationMarker;
+    contentWindow.setContent(contentString);
+    //Adding slightly to the latitude makes things look a little better.
+    contentWindow.setPosition({lat: (locationMarker.position.lat() + 0.002), lng: locationMarker.position.lng()}); 
+    contentWindow.open(map);
 }
 
 
@@ -61,6 +69,10 @@ function initialize() {
         };
 
     map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+
+    //var infowindow = new google.maps.infoWindow({
+    //    content: "Test",
+    //});
 
     //Turn this into a Knockout observable array, and use a push function to add further stuff?
     //Add more things to the markers.
