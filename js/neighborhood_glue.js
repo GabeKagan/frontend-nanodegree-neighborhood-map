@@ -81,23 +81,20 @@ function initialize() {
 var SearchViewModel = {
     searchPrompt: ko.observable(""),
     HTMLLocs: ko.observableArray(),
-    searchFilter: ko.observableArray(),
+    searchFilter: ko.observableArray(locationList),
     //The way the applet is built now, you don't add new locations.
     search: function(value){
-        console.log(value);
-        //Only attempt the "live" search if there's some text in the field. Remove everything first.
-        if(value != "") {
-            searchFilter = [];
-            for(var x in locationList)
-            {
-                //The actual search here. If we find anything, print it to the page.
-                if(locationList[x].name.toLowerCase().indexOf(value.toLowerCase()) >= 0){
+        //console.log(value);
+        SearchViewModel.searchFilter([]);
+        for(var x in locationList)
+        {
+            //The actual search here. If we find anything, print it to the page.
+            if(locationList[x].name.toLowerCase().indexOf(value.toLowerCase()) >= 0){
 
-                    searchFilter.push(locationList[x]);
-                    console.log(searchFilter); //Outputs a valid array that needs to be formatted for output.
-                }
+                SearchViewModel.searchFilter.push(locationList[x]);
             }
         }
+        //console.log(SearchViewModel.searchFilter()); //Outputs a valid array that needs to be formatted for output.
     },
 }
 
