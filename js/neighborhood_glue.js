@@ -1,6 +1,10 @@
 /*
 Possible function for later: Perform "traveling salesman" algorithm on user selected locations to find
 the shortest route between all of them.
+APIs to implement:
+Some sort of weather API (like Weather Channel/Underground, but that has fairly low usage caps)
+A travel API?
+News from locations
 */
 
 //Globals.
@@ -10,14 +14,23 @@ var contentWindow = new google.maps.InfoWindow({
     content: "Debug",
 });
 
-//Constructs stuff that'll get put in locationList.
+//Takes an item from locationList and preps it for display by running some API calls.
 //If we get this from Google Maps API requests, that might help out a bit.
 var neighborhoodLocation = function(name, lat, lng, contentString) {
     var self = this; //I assume this has to be done to hook things into Knockout.js
     self.name = name;
     self.lat = lat;
     self.lng = lng;
-    self.contentString = contentString;
+
+    //Placeholder. Later, if we don't have a coordinate, try to get something from geocoding.
+    if(lat = undefined) { lat = 0;}
+    if(lng = undefined) { lng = 0;}
+
+    //These variables are API plaecholders that will later get filled with valid data.
+    var redditLinks = '<div id="redditContent"> If you see this message, work on the Reddit functions. </div>';
+    //The initial comment string is a personal comment on the area.
+    //Expand content string to include API pulls, HTML, etc. and such.
+    self.contentString =  contentString;
 
     //Now for variables derived from the initial ones, and from other sources.
     self.locationMarker = new google.maps.Marker({
@@ -28,26 +41,38 @@ var neighborhoodLocation = function(name, lat, lng, contentString) {
 
 }
 
+
 //Create a function that converts Google Maps API data into these?
 var locationList = [
-    new neighborhoodLocation("Ginger Tree", 42.627021, -71.415069, "Blah blah food"),
-    new neighborhoodLocation("J. V. Fletcher Library", 42.5670675, -71.4476384, "Hurp durp books"),
-    new neighborhoodLocation("Henry Fletcher House",42.551111,-71.4275,"Frankly, I don't know anything about this place."),
-    new neighborhoodLocation("Westford Academy",42.577503,-71.463874,"I suppose this isn't terribly interesting."),
-    new neighborhoodLocation("Flushing Pond Road", 42.6231856,-71.438461,"Heh."),
+    new neighborhoodLocation("Boston",42.3283505,-71.0605903,"Filler"),
+    new neighborhoodLocation("New York",40.7033121,-73.979681,"Only ever been to upstate New York."),
+    new neighborhoodLocation("Philadelphia",40.0047528,-75.1180329,"Filler"),
+    new neighborhoodLocation("Atlanta",33.7677129,-84.420604,"Sure, why not?"),
+    new neighborhoodLocation("New Orleans",30.0219504,-89.8830829,"Just not during hurricane season..."),
+    //Get coords for: Toronto, Montreal, Chicago, Austin, Portland, Seattle, Vancouver,
+    //Rio de Janeiro, Montevideo, Buenos Aires, Valparaiso, Cusco
+    //Dublin, London, Brussels, Amsterdam, Frankfurt, Hamburg, Berlin
+    //Copenhagen, Gothenburg, Oslo, Stockholm, Helsinki, Saint Petersburg,
+    //Gdansk, Warsaw, Krakow, Prague, Budapest, Vienna, Zurich, Milan, Rome
+    //Istanbul, Damascus, Tel Aviv, Cairo, Tunis, Algiers, Tangier, Casablanca
+    //Moscow, Kazan, Yekaterinburg, Novosibirsk, Irkutsk, Vladivostok, Magadan
+    //Seoul, Tokyo, Osaka, Harbin, Nanjing, Taipei, Xiamen, Urumqi, Ulaanbaatar
+    //Add more locations like Central Asia, India, Southeast Asia, Australia/NZ, Subsaharan Africa
+
 ];
 
 //Knockoutify this? More importantly, make this a method of neighborhoodLocation?
-var addMarker = function(neighborhoodLocation) {
+function addMarker(neighborhoodLocation) {
 
     this.name = neighborhoodLocation.name;
     this.lat = neighborhoodLocation.lat;
     this.lng = neighborhoodLocation.lng;
     this.locationMarker = neighborhoodLocation.locationMarker;
-    
+
     locationMarker.setMap(map);
     google.maps.event.addListener(locationMarker, 'click', function() {
-        moveWindow(neighborhoodLocation); 
+        moveWindow(neighborhoodLocation);
+        
     });
 }
 
@@ -55,17 +80,51 @@ var addMarker = function(neighborhoodLocation) {
 function moveWindow(neighborhoodLocation) {
     this.contentString = neighborhoodLocation.contentString;
     this.locationMarker = neighborhoodLocation.locationMarker;
+
+    console.log(getRedditData(neighborhoodLocation))
+
+    contentString = '<div id="infoWindow"> ' + contentString + 
+    '<ul id="redditPosts">' + getRedditData(neighborhoodLocation) + '</ul>' + '</div>';
+
     contentWindow.setContent(contentString);
     //Adding slightly to the latitude makes things look a little better.
-    contentWindow.setPosition({lat: (locationMarker.position.lat() + 0.002), lng: locationMarker.position.lng()}); 
+    contentWindow.setPosition({lat: (locationMarker.position.lat() + 0.002), lng: locationMarker.position.lng()});
+
     contentWindow.open(map);
 }
 
 
+//Based on http://speckyboy.com/2014/01/22/building-simple-reddit-api-webapp-using-jquery/
+function getRedditData(neighborhoodLocation) {
+    this.name = neighborhoodLocation.name;
+    var redditHTML = "";
+    //Pull five posts mentioning our location from Reddit's "travel" API
+    var redditRequestURL = "http://www.reddit.com/r/travel/search.json?q=" + name + "&limit=5&sort=relevance&restrict_sr=0";
+
+    $.getJSON(redditRequestURL, function(postSet){
+        var listing = postSet.data.children;
+        //Iterate through the list and get some tags we can put in the HTML.
+        for(var i = 0; i < listing.length; i++) {
+            var obj = listing[i].data;
+
+            var title = obj.title;
+            //var subtime = obj.created_utc;
+            var votes = obj.score;
+            var redditurl = "http://www.reddit.com"+obj.permalink;
+            //Create the HTML tags we need
+            redditHTML += '<li><a href="' + redditurl +'">' + title + '</a></li>';
+            
+        }
+        console.log(redditHTML);
+        if(redditHTML == "") { redditHTML = "If you see this message, debug the Reddit functions.";}
+        return redditHTML;
+    })
+}
+
 function initialize() {
     var mapOptions = {
-        center: { lat: 42.5792, lng: -71.4383},
-        zoom: 12
+        center: { lat: 40.7033121, lng: -73.979681},
+        zoom: 4
         };
 
     map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
