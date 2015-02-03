@@ -13,6 +13,7 @@ var searchPrompt = "";
 var contentWindow = new google.maps.InfoWindow({
     content: "Debug",
 });
+var redditHTML = "";
 
 //Takes an item from locationList and preps it for display by running some API calls.
 //If we get this from Google Maps API requests, that might help out a bit.
@@ -81,11 +82,12 @@ function moveWindow(neighborhoodLocation) {
     this.contentString = neighborhoodLocation.contentString;
     this.locationMarker = neighborhoodLocation.locationMarker;
 
-    console.log(getRedditData(neighborhoodLocation))
-
+    //Currently returns an empty string. Was returning undefined earlier.
+    redditData = getRedditData(neighborhoodLocation);
+    //console.log(redditData);
     contentString = '<div id="infoWindow"> ' + contentString + 
-    '<ul id="redditPosts">' + getRedditData(neighborhoodLocation) + '</ul>' + '</div>';
-
+    '<ul id="redditPosts">' + redditData + '</ul>' + '</div>';
+    
     contentWindow.setContent(contentString);
     //Adding slightly to the latitude makes things look a little better.
     contentWindow.setPosition({lat: (locationMarker.position.lat() + 0.002), lng: locationMarker.position.lng()});
@@ -97,11 +99,11 @@ function moveWindow(neighborhoodLocation) {
 //Based on http://speckyboy.com/2014/01/22/building-simple-reddit-api-webapp-using-jquery/
 function getRedditData(neighborhoodLocation) {
     this.name = neighborhoodLocation.name;
-    var redditHTML = "";
     //Pull five posts mentioning our location from Reddit's "travel" API
     var redditRequestURL = "http://www.reddit.com/r/travel/search.json?q=" + name + "&limit=5&sort=relevance&restrict_sr=0";
 
     $.getJSON(redditRequestURL, function(postSet){
+        redditHTML = "";
         var listing = postSet.data.children;
         //Iterate through the list and get some tags we can put in the HTML.
         for(var i = 0; i < listing.length; i++) {
@@ -116,9 +118,9 @@ function getRedditData(neighborhoodLocation) {
             
         }
         console.log(redditHTML);
-        if(redditHTML == "") { redditHTML = "If you see this message, debug the Reddit functions.";}
-        return redditHTML;
     })
+    if(redditHTML == "") { redditHTML = "If you see this message, debug the Reddit functions.";} 
+    return redditHTML;
 }
 
 function initialize() {
