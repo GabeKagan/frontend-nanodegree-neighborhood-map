@@ -14,6 +14,7 @@ var contentWindow = new google.maps.InfoWindow({
     content: "Debug",
 });
 var redditHTML = "";
+var wikiHTML = "";
 
 //Takes an item from locationList and preps it for display by running some API calls.
 //If we get this from Google Maps API requests, that might help out a bit.
@@ -27,8 +28,7 @@ var neighborhoodLocation = function(name, lat, lng, contentString) {
     if(lat = undefined) { lat = 0;}
     if(lng = undefined) { lng = 0;}
 
-    //These variables are API plaecholders that will later get filled with valid data.
-    var redditLinks = '<div id="redditContent"> If you see this message, work on the Reddit functions. </div>';
+
     //The initial comment string is a personal comment on the area.
     //Expand content string to include API pulls, HTML, etc. and such.
     self.contentString =  contentString;
@@ -84,6 +84,8 @@ function moveWindow(neighborhoodLocation) {
 
     //Currently returns an empty string. Was returning undefined earlier.
     redditData = getRedditData(neighborhoodLocation);
+    wikiData = getWikipediaPage(neighborhoodLocation);
+    console.log(wikiData);
     //console.log(redditData);
     contentString = '<div id="infoWindow"> ' + contentString + 
     '<ul id="redditPosts">' + redditData + '</ul>' + '</div>';
@@ -97,6 +99,8 @@ function moveWindow(neighborhoodLocation) {
 
 
 //Based on http://speckyboy.com/2014/01/22/building-simple-reddit-api-webapp-using-jquery/
+//Use this link to make callbacks for this and the Wiki function work properly:
+//http://stackoverflow.com/questions/14220321/how-to-return-the-response-from-an-ajax-call
 function getRedditData(neighborhoodLocation) {
     this.name = neighborhoodLocation.name;
     //Pull five posts mentioning our location from Reddit's "travel" API
@@ -108,7 +112,6 @@ function getRedditData(neighborhoodLocation) {
         //Iterate through the list and get some tags we can put in the HTML.
         for(var i = 0; i < listing.length; i++) {
             var obj = listing[i].data;
-
             var title = obj.title;
             //var subtime = obj.created_utc;
             var votes = obj.score;
@@ -121,6 +124,34 @@ function getRedditData(neighborhoodLocation) {
     })
     if(redditHTML == "") { redditHTML = "If you see this message, debug the Reddit functions.";} 
     return redditHTML;
+}
+
+function getWikipediaPage(neighborhoodLocation) {
+    this.name = neighborhoodLocation.name;
+    wikiHTML = ""; //Cleanup
+    var wikiUrl = 'http://en.wikipedia.org/w/api.php?action=opensearch&search=' + name + '&format=json&callback=wikiCallback';
+    //Uncomment and modify when ready to set a timeout.
+    //var wikiRequestTimeout = setTimeout(function(){
+    //    wikiHTML = "Sorry, we didn't manage to get a Wikipedia page for this place.";
+    //}, 8000);
+    $.ajax({
+        url: wikiUrl,
+        dataType: "jsonp",
+        jsonp: "callback",
+        success: function( response ) {
+            //console.log(response);
+            //Variable defines for sanity and overall code readability.
+            var mainArticle = response[1][0];
+            var articleExcerpt = response[2][0];
+            var articleURL = response[3][0];
+            wikiHTML = "<div id='wikiData'><a href='" + articleURL + "'>" + mainArticle + "</a> - " +
+                "<p>" + articleExcerpt + "</p>";
+            console.log(wikiHTML);
+
+            //clearTimeout(wikiRequestTimeout);
+        }
+    });
+    return wikiHTML;
 }
 
 function initialize() {
