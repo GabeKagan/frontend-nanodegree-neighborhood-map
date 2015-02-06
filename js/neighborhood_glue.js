@@ -83,12 +83,12 @@ function moveWindow(neighborhoodLocation) {
     this.locationMarker = neighborhoodLocation.locationMarker;
 
     //Currently returns an empty string. Was returning undefined earlier.
-    redditData = getRedditData(neighborhoodLocation);
-    wikiData = getWikipediaPage(neighborhoodLocation);
-    console.log(wikiData);
+    getRedditData(neighborhoodLocation);
+    //wikiData = getWikipediaPage(neighborhoodLocation);
+    //console.log(wikiData);
     //console.log(redditData);
     contentString = '<div id="infoWindow"> ' + contentString + 
-    '<ul id="redditPosts">' + redditData + '</ul>' + '</div>';
+    '<ul id="redditPosts">' + redditHTML + '</ul>' + '</div>';
     
     contentWindow.setContent(contentString);
     //Adding slightly to the latitude makes things look a little better.
@@ -97,6 +97,9 @@ function moveWindow(neighborhoodLocation) {
     contentWindow.open(map);
 }
 
+//At some point, these API calls need to be pushed into Knockout observables.
+//This might be the case even when their HTML is being added to Google Maps infowindows.
+//Note things from here at that point: http://stackoverflow.com/questions/15317796/knockout-loses-bindings-when-google-maps-api-v3-info-window-is-closed
 
 //Based on http://speckyboy.com/2014/01/22/building-simple-reddit-api-webapp-using-jquery/
 //Use this link to make callbacks for this and the Wiki function work properly:
@@ -105,9 +108,9 @@ function getRedditData(neighborhoodLocation) {
     this.name = neighborhoodLocation.name;
     //Pull five posts mentioning our location from Reddit's "travel" API
     var redditRequestURL = "http://www.reddit.com/r/travel/search.json?q=" + name + "&limit=5&sort=relevance&restrict_sr=0";
-
+    var redditConstructor = "";
     $.getJSON(redditRequestURL, function(postSet){
-        redditHTML = "";
+        redditConstructor = "";
         var listing = postSet.data.children;
         //Iterate through the list and get some tags we can put in the HTML.
         for(var i = 0; i < listing.length; i++) {
@@ -117,13 +120,15 @@ function getRedditData(neighborhoodLocation) {
             var votes = obj.score;
             var redditurl = "http://www.reddit.com"+obj.permalink;
             //Create the HTML tags we need
-            redditHTML += '<li><a href="' + redditurl +'">' + title + '</a></li>';
+            redditConstructor += '<li><a href="' + redditurl +'">' + title + '</a></li>';
             
         }
-        console.log(redditHTML);
+        //console.log(redditConstructor);
     })
-    if(redditHTML == "") { redditHTML = "If you see this message, debug the Reddit functions.";} 
-    return redditHTML;
+    //SearchViewModel.redditHTML(redditConstructor); 
+    SearchViewModel.redditHTML('<a href="' + redditRequestURL + '">' + name + '</a>'); //Test
+    console.log(SearchViewModel.redditHTML);
+    //if(redditHTML == "") { redditHTML = "If you see this message, debug the Reddit functions.";} 
 }
 
 function getWikipediaPage(neighborhoodLocation) {
@@ -186,6 +191,7 @@ var SearchViewModel = {
     searchPrompt: ko.observable(""),
     HTMLLocs: ko.observableArray(),
     searchFilter: ko.observableArray(locationList),
+    redditHTML: ko.observable("Test"),
     //The way the applet is built now, you don't add new locations.
     search: function(value){
         //console.log(value);

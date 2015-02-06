@@ -24,6 +24,8 @@
             <input placeholder = "Location" type="search" data-bind="value: searchPrompt, valueUpdate: 'input'" autocomplete="off">
             </p>
         </div>
+
+
         <div id="locationListDisplay">
             <select id="locationOptions" multiple="multiple" width="50" data-bind="options:HTMLLocs, click:showCorrespondingMarker()"></select>
         </div>
@@ -34,6 +36,15 @@
                 <strong data-bind="text:name"></strong>
             </li>
         </script>
+
+        <!--This div should be moved into the infoWindow.-->
+        <div id="APIContents">
+            Discussions on Reddit: <span data-bind="html: redditHTML"></span>
+            <br/>
+            Wikipedia: <span data-bind="text: wikiHTML"></span>
+        </div>
+
+        
 
    
 
