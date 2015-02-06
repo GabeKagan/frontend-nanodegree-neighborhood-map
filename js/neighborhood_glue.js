@@ -108,7 +108,7 @@ function getRedditData(neighborhoodLocation) {
     this.name = neighborhoodLocation.name;
     //Pull five posts mentioning our location from Reddit's "travel" API
     var redditRequestURL = "http://www.reddit.com/r/travel/search.json?q=" + name + "&limit=5&sort=relevance&restrict_sr=0";
-    var redditConstructor = "";
+    var redditConstructor = "If you see this message, debug the Reddit functions.";
     $.getJSON(redditRequestURL, function(postSet){
         redditConstructor = "";
         var listing = postSet.data.children;
@@ -124,10 +124,9 @@ function getRedditData(neighborhoodLocation) {
             
         }
         //console.log(redditConstructor);
-    })
-    //SearchViewModel.redditHTML(redditConstructor); 
-    SearchViewModel.redditHTML('<a href="' + redditRequestURL + '">' + name + '</a>'); //Test
-    console.log(SearchViewModel.redditHTML);
+    }).done(function() { SearchViewModel.redditHTML(redditConstructor); });
+    //SearchViewModel.redditHTML('<a href="' + redditRequestURL + '">' + name + '</a>'); //Test
+    console.log(SearchViewModel.redditHTML());
     //if(redditHTML == "") { redditHTML = "If you see this message, debug the Reddit functions.";} 
 }
 
@@ -191,7 +190,7 @@ var SearchViewModel = {
     searchPrompt: ko.observable(""),
     HTMLLocs: ko.observableArray(),
     searchFilter: ko.observableArray(locationList),
-    redditHTML: ko.observable("Test"),
+    redditHTML: ko.observable(""),
     //The way the applet is built now, you don't add new locations.
     search: function(value){
         //console.log(value);
