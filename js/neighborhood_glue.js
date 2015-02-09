@@ -13,8 +13,13 @@ var searchPrompt = "";
 var contentWindow = new google.maps.InfoWindow({
     content: "Debug",
 });
-var redditHTML = "";
-var wikiHTML = "";
+var redditHTML;
+var wikiHTML;
+var photoURL;
+var photoList;
+var pictureService;
+var placeDetails;
+
 
 //Takes an item from locationList and preps it for display by running some API calls.
 //If we get this from Google Maps API requests, that might help out a bit.
@@ -79,17 +84,29 @@ function addMarker(neighborhoodLocation) {
 
 //moveWindow gets the content and position from the location, and attaches to the marker.
 function moveWindow(neighborhoodLocation) {
+    this.name = neighborhoodLocation.name;
     this.contentString = neighborhoodLocation.contentString;
     this.locationMarker = neighborhoodLocation.locationMarker;
+    this.lat = neighborhoodLocation.lat;
+    this.lng = neighborhoodLocation.lng;
 
-    //Currently returns an empty string. Was returning undefined earlier.
+    //We'll add an image to this later.
+    contentString = '<div id="infoWindow"> <p>' + contentString + '</p> </div>';
+    console.log(contentString);
+
+    //Makes some AJAX requests.
     getRedditData(neighborhoodLocation);
     getWikipediaPage(neighborhoodLocation);
 
-    //Still working on this.
-    contentString = '<div id="infoWindow"> ' + contentString + 
-    '<ul id="redditPosts">' + redditHTML + '</ul>' + '</div>';
-    
+    //Data and function for a request to the Google Places API
+    var pictureRequest = {
+        location: {lat: this.lat, lng: this.lng,},
+        radius: '5000',
+        name: name,
+    }
+    pictureService = new google.maps.places.PlacesService(map);
+    pictureService.nearbySearch(pictureRequest, getLocalLandmark);
+
     contentWindow.setContent(contentString);
     //Adding slightly to the latitude makes things look a little better.
     contentWindow.setPosition({lat: (locationMarker.position.lat() + 0.002), lng: locationMarker.position.lng()});
@@ -97,6 +114,25 @@ function moveWindow(neighborhoodLocation) {
     contentWindow.open(map);
 }
 
+function getLocalLandmark(results, status){
+    if (status == google.maps.places.PlacesServiceStatus.OK) {
+        var place = results[0];
+        console.log(place);
+        //If we get a place and a photo at all, then it's time to construct a request and add it to the page.
+        //See https://developers.google.com/places/documentation/photos.
+        if(place.photos != undefined){
+            photoList = place.photos[0];
+            console.log(photoList);
+            photoURL = 'http://maps.googleapis.com/maps/api/place/photo?maxwidth=400&' +
+            'photoreference=' + photoList +
+            "&key=AIzaSyCeG1ftdGJnxx6m8lN_qrS1NrOIoXD1Vz4";
+            $("#infoWindow").append('<img src = "' + photoURL + '" alt="Image from Google Places API">');
+        }else { $("#infoWindow").append('No image, beautify this error'); }
+
+        console.log($("#infoWindow").html());
+        return place;
+    } //Add a failure image of some sort for usability's sake
+}
 
 //Note things from here at that point: http://stackoverflow.com/questions/15317796/knockout-loses-bindings-when-google-maps-api-v3-info-window-is-closed
 //Based on http://speckyboy.com/2014/01/22/building-simple-reddit-api-webapp-using-jquery/
@@ -123,9 +159,6 @@ function getRedditData(neighborhoodLocation) {
         }
         //console.log(redditConstructor);
     }).done(function() { SearchViewModel.redditHTML(redditConstructor); });
-    //SearchViewModel.redditHTML('<a href="' + redditRequestURL + '">' + name + '</a>'); //Test
-    console.log(SearchViewModel.redditHTML());
-    //if(redditHTML == "") { redditHTML = "If you see this message, debug the Reddit functions.";} 
 }
 
 function getWikipediaPage(neighborhoodLocation) {
@@ -148,7 +181,7 @@ function getWikipediaPage(neighborhoodLocation) {
             var articleURL = response[3][0];
             wikiHTML = "<div id='wikiData'><a href='" + articleURL + "'>" + mainArticle + "</a> - " +
                 "<p>" + articleExcerpt + "</p>";
-            console.log(wikiHTML);
+            //console.log(wikiHTML);
 
             //clearTimeout(wikiRequestTimeout);
         }
