@@ -102,6 +102,7 @@ function moveWindow(neighborhoodLocation) {
     var pictureRequest = {
         location: {lat: this.lat, lng: this.lng,},
         radius: '5000',
+        //We need this variable to ensure photos are returned, but it reduces the quality of the photos.
         name: name,
     }
     pictureService = new google.maps.places.PlacesService(map);
@@ -123,9 +124,7 @@ function getLocalLandmark(results, status){
         if(place.photos != undefined){
             photoList = place.photos[0];
             console.log(photoList);
-            photoURL = 'http://maps.googleapis.com/maps/api/place/photo?maxwidth=400&' +
-            'photoreference=' + photoList +
-            "&key=AIzaSyCeG1ftdGJnxx6m8lN_qrS1NrOIoXD1Vz4";
+            photoURL = photoList.getUrl({'maxWidth': 200, 'maxHeight': 200});
             $("#infoWindow").append('<img src = "' + photoURL + '" alt="Image from Google Places API">');
         }else { $("#infoWindow").append('No image, beautify this error'); }
 
