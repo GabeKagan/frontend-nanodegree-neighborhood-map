@@ -84,9 +84,9 @@ function moveWindow(neighborhoodLocation) {
 
     //Currently returns an empty string. Was returning undefined earlier.
     getRedditData(neighborhoodLocation);
-    //wikiData = getWikipediaPage(neighborhoodLocation);
-    //console.log(wikiData);
-    //console.log(redditData);
+    getWikipediaPage(neighborhoodLocation);
+
+    //Still working on this.
     contentString = '<div id="infoWindow"> ' + contentString + 
     '<ul id="redditPosts">' + redditHTML + '</ul>' + '</div>';
     
@@ -97,10 +97,8 @@ function moveWindow(neighborhoodLocation) {
     contentWindow.open(map);
 }
 
-//At some point, these API calls need to be pushed into Knockout observables.
-//This might be the case even when their HTML is being added to Google Maps infowindows.
-//Note things from here at that point: http://stackoverflow.com/questions/15317796/knockout-loses-bindings-when-google-maps-api-v3-info-window-is-closed
 
+//Note things from here at that point: http://stackoverflow.com/questions/15317796/knockout-loses-bindings-when-google-maps-api-v3-info-window-is-closed
 //Based on http://speckyboy.com/2014/01/22/building-simple-reddit-api-webapp-using-jquery/
 //Use this link to make callbacks for this and the Wiki function work properly:
 //http://stackoverflow.com/questions/14220321/how-to-return-the-response-from-an-ajax-call
@@ -154,8 +152,7 @@ function getWikipediaPage(neighborhoodLocation) {
 
             //clearTimeout(wikiRequestTimeout);
         }
-    });
-    return wikiHTML;
+    }).done(function() { SearchViewModel.wikiHTML(wikiHTML); });
 }
 
 function initialize() {
@@ -191,6 +188,7 @@ var SearchViewModel = {
     HTMLLocs: ko.observableArray(),
     searchFilter: ko.observableArray(locationList),
     redditHTML: ko.observable(""),
+    wikiHTML: ko.observable(""),
     //The way the applet is built now, you don't add new locations.
     search: function(value){
         //console.log(value);
