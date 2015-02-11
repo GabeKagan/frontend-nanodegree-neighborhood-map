@@ -49,12 +49,20 @@ var neighborhoodLocation = function(name, lat, lng, contentString) {
 
 
 //Create a function that converts Google Maps API data into these?
+//Maybe I should move this to a new file.
 var locationList = [
-    new neighborhoodLocation("Boston",42.3283505,-71.0605903,"Filler"),
+    new neighborhoodLocation("Boston",42.3283505,-71.0605903,"It's less than an hour away from home!"),
     new neighborhoodLocation("New York",40.7033121,-73.979681,"Only ever been to upstate New York."),
-    new neighborhoodLocation("Philadelphia",40.0047528,-75.1180329,"Filler"),
+    new neighborhoodLocation("Philadelphia",40.0047528,-75.1180329,"How civic of me."),
     new neighborhoodLocation("Atlanta",33.7677129,-84.420604,"Sure, why not?"),
     new neighborhoodLocation("New Orleans",30.0219504,-89.8830829,"Just not during hurricane season..."),
+    new neighborhoodLocation("Toronto",43.7182713,-79.3777061,"Filler"),
+    new neighborhoodLocation("Montreal",45.5601451,-73.7120832,"I went here once when I was five years old."),
+    new neighborhoodLocation("Chicago",41.8337329,-87.7321555,"Filler"),
+    new neighborhoodLocation("Austin",30.2638839,-97.7437884,"Filler"),
+    new neighborhoodLocation("Portland",45.5424364,-122.654422,"Less wildfire prone than California. I should hope."),
+    new neighborhoodLocation("Seattle",47.614848,-122.3359059,"It's all grungy."),
+    new neighborhoodLocation("Vancouver",49.2569684,-123.1239135,"Beginning to notice my love of cities?"),
     //Get coords for: Toronto, Montreal, Chicago, Austin, Portland, Seattle, Vancouver,
     //Rio de Janeiro, Montevideo, Buenos Aires, Valparaiso, Cusco
     //Dublin, London, Brussels, Amsterdam, Frankfurt, Hamburg, Berlin
@@ -218,21 +226,24 @@ function initialize() {
 var SearchViewModel = {
     searchPrompt: ko.observable(""),
     HTMLLocs: ko.observableArray(),
-    searchFilter: ko.observableArray(locationList),
+    searchFilter: ko.observableArray(),
     redditHTML: ko.observable(""),
     wikiHTML: ko.observable(""),
     //The way the applet is built now, you don't add new locations.
     search: function(value){
-        //console.log(value);
-        SearchViewModel.searchFilter([]);
-        for(var x in locationList)
+        //Only search and populate the list if the user types in something.
+        if(value != "")
         {
-            //The actual search here. If we find anything, print it to the page.
-            if(locationList[x].name.toLowerCase().indexOf(value.toLowerCase()) >= 0){
+            SearchViewModel.searchFilter([]);
+            for(var x in locationList)
+            {
+                //The actual search here. If we find anything, print it to the page.
+                if(locationList[x].name.toLowerCase().indexOf(value.toLowerCase()) >= 0){
 
-                SearchViewModel.searchFilter.push(locationList[x]);
+                    SearchViewModel.searchFilter.push(locationList[x]);
+                }
             }
-        }
+        } else { SearchViewModel.searchFilter([]);}
         //console.log(SearchViewModel.searchFilter()); //Outputs a valid array that needs to be formatted for output.
     },
 }
