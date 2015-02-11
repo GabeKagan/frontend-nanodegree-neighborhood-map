@@ -133,7 +133,11 @@ function getLocalLandmark(results, status){
             photoList = place.photos[0];
             console.log(photoList);
             photoURL = photoList.getUrl({'maxWidth': 200, 'maxHeight': 200});
-            $("#infoWindow").append('<img src = "' + photoURL + '" alt="Image from Google Places API">');
+            $("#infoWindow").append('<img src = "' + photoURL + '" alt="Image from Google Places API">')
+            //As part of Google's policies, I am required to show the attribution for these pictures.
+            if(photoList.html_attributions[0] != undefined){
+                $("#infoWindow").append('<p>Source: ' + photoList.html_attributions[0] + '</p>');
+            } else {$("#infoWindow").append("<p>Google doesn't seem to know where this image came from.</p>");}
         }else { $("#infoWindow").append('No image, beautify this error'); }
 
         console.log($("#infoWindow").html());
