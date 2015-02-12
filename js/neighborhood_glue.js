@@ -63,7 +63,13 @@ var locationList = [
     new neighborhoodLocation("Portland",45.5424364,-122.654422,"Less wildfire prone than California. I should hope."),
     new neighborhoodLocation("Seattle",47.614848,-122.3359059,"It's all grungy."),
     new neighborhoodLocation("Vancouver",49.2569684,-123.1239135,"Beginning to notice my love of cities?"),
-    //Get coords for: Toronto, Montreal, Chicago, Austin, Portland, Seattle, Vancouver,
+    new neighborhoodLocation("Rio de Janeiro",-22.066452,-42.9232368,"Filler"),
+    new neighborhoodLocation("Montevideo",-34.8200027,-56.2292752,"Filler"),
+    new neighborhoodLocation("Buenos Aires",-34.6158533,-58.4332985,"Filler"),
+    new neighborhoodLocation("Valparaiso",-33.1163955,-71.5650318,"The &#34;Jewel of the Pacific&#34;. Then Panama stole its thunder."),
+    new neighborhoodLocation("Cusco",-13.5300193,-71.9392491,"Incas, and the barbarous Europeans who displaced them."),
+    
+    //Get coords for: 
     //Rio de Janeiro, Montevideo, Buenos Aires, Valparaiso, Cusco
     //Dublin, London, Brussels, Amsterdam, Frankfurt, Hamburg, Berlin
     //Copenhagen, Gothenburg, Oslo, Stockholm, Helsinki, Saint Petersburg,
