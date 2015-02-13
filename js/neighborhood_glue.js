@@ -7,18 +7,13 @@ A travel API?
 News from locations
 */
 
-//Globals.
-var map = "";
+//Globals. We need a bunch of these.
+var map;
 var searchPrompt = "";
 var contentWindow = new google.maps.InfoWindow({
     content: "Debug",
 });
-var redditHTML;
-var wikiHTML;
-var photoURL;
-var photoList;
-var pictureService;
-var placeDetails;
+var redditHTML, wikiHTML, photoURL, photoList, pictureService, placeDetails, highlightedLocation;
 
 
 //Takes an item from locationList and preps it for display by running some API calls.
@@ -65,7 +60,7 @@ var locationList = [
     new neighborhoodLocation("Vancouver",49.2569684,-123.1239135,"Beginning to notice my love of cities?"),
     new neighborhoodLocation("Rio de Janeiro",-22.066452,-42.9232368,"Filler"),
     new neighborhoodLocation("Montevideo",-34.8200027,-56.2292752,"Uraguay is apparently quite nice these days."),
-    new neighborhoodLocation("Buenos Aires",-34.6158533,-58.4332985,"Filler"),
+    new neighborhoodLocation("Buenos Aires",-34.6158533,-58.4332985,"I used to know a person from here."),
     new neighborhoodLocation("Valparaiso",-33.1163955,-71.5650318,"The &#34;Jewel of the Pacific&#34;. Then Panama stole its thunder."),
     new neighborhoodLocation("Cusco",-13.5300193,-71.9392491,"Incas, and the barbarous Europeans who displaced them."),
     
@@ -106,7 +101,6 @@ function moveWindow(neighborhoodLocation) {
 
     //We'll add an image to this later.
     contentString = '<div id="infoWindow"> <p>' + contentString + '</p> </div>';
-    console.log(contentString);
 
     //Makes some AJAX requests.
     getRedditData(neighborhoodLocation);
@@ -132,12 +126,12 @@ function moveWindow(neighborhoodLocation) {
 function getLocalLandmark(results, status){
     if (status == google.maps.places.PlacesServiceStatus.OK) {
         var place = results[0];
-        console.log(place);
+        //console.log(place);
         //If we get a place and a photo at all, then it's time to construct a request and add it to the page.
         //See https://developers.google.com/places/documentation/photos.
         if(place.photos != undefined){
             photoList = place.photos[0];
-            console.log(photoList);
+            //console.log(photoList);
             photoURL = photoList.getUrl({'maxWidth': 200, 'maxHeight': 200});
             $("#infoWindow").append('<img src = "' + photoURL + '" alt="Image from Google Places API">')
             //As part of Google's policies, I am required to show the attribution for these pictures.
@@ -146,7 +140,7 @@ function getLocalLandmark(results, status){
             } else {$("#infoWindow").append("<p>Google doesn't seem to know where this image came from.</p>");}
         }else { $("#infoWindow").append('No image, beautify this error'); }
 
-        console.log($("#infoWindow").html());
+        //console.log($("#infoWindow").html());
         return place;
     } //Add a failure image of some sort for usability's sake
 }
@@ -239,6 +233,7 @@ var SearchViewModel = {
     searchFilter: ko.observableArray(),
     redditHTML: ko.observable(""),
     wikiHTML: ko.observable(""),
+    highlightedLocation: ko.observable(""),
     //The way the applet is built now, you don't add new locations.
     search: function(value){
         //Only search and populate the list if the user types in something.
@@ -254,12 +249,12 @@ var SearchViewModel = {
                 }
             }
         } else { SearchViewModel.searchFilter([]);}
-        //console.log(SearchViewModel.searchFilter()); //Outputs a valid array that needs to be formatted for output.
     },
 }
 
 function showCorrespondingMarker() {
     //First, reset the marker coloration.
+    console.log(highlightedLocation);
     for(var x in locationList)
     {
         locationList[x].locationMarker.setIcon('http://maps.google.com/mapfiles/ms/icons/red-dot.png');
@@ -278,6 +273,7 @@ function showCorrespondingMarker() {
         locationList[selectedMarker].locationMarker.setIcon('http://maps.google.com/mapfiles/ms/icons/blue-dot.png');
         map.setCenter({lat:locationList[selectedMarker].lat, lng:locationList[selectedMarker].lng});
     }
+
 }
 
 
