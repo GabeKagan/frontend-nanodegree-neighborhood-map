@@ -14,18 +14,13 @@
 
   </head>
   <body>
-
-        <div id="map-canvas"></div>
-
-        <!--Knockout.js related stuff probably goes here-->
+        
         <div id="searchbar">
             <br/> 
             <p>Type here to search the list of marked locations:
             <input placeholder = "Location" type="search" data-bind="value: searchPrompt, valueUpdate: 'input'" autocomplete="off">
             </p>
         </div>
-
-
         <div id="locationListDisplay">
             <select id="locationOptions" multiple="multiple" width="50" data-bind="options:HTMLLocs, click:showCorrespondingMarker()"></select>
         </div>
@@ -36,13 +31,19 @@
                 <strong data-bind="text:name"></strong>
             </li>
         </script>
-        <p>Click a marker to see:</p>
-        <!--This div should be moved into the infoWindow.-->
-        <div id="APIContents">
-            Discussions on Reddit: <span data-bind="html: redditHTML"></span>
-            <br/>
-            Wikipedia: <span data-bind="html: wikiHTML"></span>
+        <p>Click a marker to get links, commentary, and a picture.</p>
+
+        <!--Experimentally moving the map canvas to the bottom of the layout in the name of responsive design-->
+        <div id = "map-box">
+            <div id="map-canvas"> </div>
+            <!--This div should be moved into the infoWindow.-->
+            <div id="APIContents">
+                Discussions on Reddit: <span data-bind="html: redditHTML"></span>
+                <br/>
+                Wikipedia: <span data-bind="html: wikiHTML"></span>
+            </div>
         </div>
+
         <footer id="legalese">
             <img src="images/powered-by-google-on-white.png" alt="Powered by Google" style="width:104px,height:16px">
             <p>This application is powered by the Google Maps API.
