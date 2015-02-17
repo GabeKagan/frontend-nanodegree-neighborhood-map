@@ -22,9 +22,9 @@
             <input placeholder = "Location" type="search" data-bind="value: searchPrompt, valueUpdate: 'input'" autocomplete="off">
             </p>
         </div>
-        <!--Refactor the search function to output to locationList, so that the user can click on filtered locations to recenter the map.-->
+        <!--The list display will be used to implement a traveling salesman algorithm.-->
         <div id="locationListDisplay">
-            <select id="locationOptions" multiple="true" width="50" data-bind="value: highlightedLocation, options:HTMLLocs, click:showCorrespondingMarker()"></select>
+            <select id="locationOptions" multiple="false" width="50" data-bind="value: highlightedLocation, options:HTMLLocs, click:getRoute(highlightedLocation())"></select>
         </div>
         <ul data-bind='template: {name:"filteredLocations", foreach:searchFilter}'></ul>
         <script type="text/html" id="filteredLocations">

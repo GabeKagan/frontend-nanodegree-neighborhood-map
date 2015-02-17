@@ -13,7 +13,7 @@ var searchPrompt = "";
 var contentWindow = new google.maps.InfoWindow({
     content: "Debug",
 });
-var redditHTML, wikiHTML, photoURL, photoList, pictureService, placeDetails, highlightedLocation;
+var redditHTML, wikiHTML, photoURL, photoList, pictureService, placeDetails, highlightedLocation, selectedMarker;
 
 
 //Takes an item from locationList and preps it for display by running some API calls.
@@ -37,7 +37,7 @@ var neighborhoodLocation = function(name, lat, lng, contentString) {
     self.locationMarker = new google.maps.Marker({
         title: this.name,
         position: {lat: this.lat, lng: this.lng,},
-        icon: "http://maps.google.com/mapfiles/ms/icons/red-dot.png",
+        icon: "images/red-dot.png",
     });
 
 }
@@ -45,7 +45,7 @@ var neighborhoodLocation = function(name, lat, lng, contentString) {
 
 //Create a function that converts Google Maps API data into these?
 //Maybe I should move this to a new file.
-var locationList = [
+var locationList = ko.observableArray([
     new neighborhoodLocation("Boston",42.3283505,-71.0605903,"It's less than an hour away from home!"),
     new neighborhoodLocation("New York",40.7033121,-73.979681,"Only ever been to upstate New York."),
     new neighborhoodLocation("Philadelphia",40.0047528,-75.1180329,"How civic of me."),
@@ -84,7 +84,7 @@ var locationList = [
     //Seoul, Tokyo, Osaka, Harbin, Nanjing, Taipei, Xiamen, Urumqi, Ulaanbaatar
     //Add more locations like Central Asia, India, Southeast Asia, Australia/NZ, Subsaharan Africa
 
-];
+]);
 
 //Knockoutify this? More importantly, make this a method of neighborhoodLocation?
 function addMarker(neighborhoodLocation) {
@@ -224,13 +224,13 @@ function initialize() {
     //Turn this into a Knockout observable array, and use a push function to add further stuff?
     //Add more things to the markers.
     //Displays the markers and populates the HTML list. 
-    for(var i=0;i<locationList.length;++i)
+    for(var i=0;i<locationList().length;++i)
     {
-        addMarker(locationList[i]);
+        addMarker(locationList()[i]);
     }
-    for(var i=0;i<locationList.length;++i)
+    for(var i=0;i<locationList().length;++i)
     {
-        SearchViewModel.HTMLLocs.push(locationList[i].name);
+        SearchViewModel.HTMLLocs.push(locationList()[i].name);
     }
 
 }
@@ -243,25 +243,43 @@ var SearchViewModel = {
     searchFilter: ko.observableArray(),
     redditHTML: ko.observable(""),
     wikiHTML: ko.observable(""),
-    highlightedLocation: ko.observable(""),
+    highlightedLocation: ko.observableArray(),
     //The way the applet is built now, you don't add new locations.
     search: function(value){
         //Only search and populate the list if the user types in something.
         if(value != "")
         {
             SearchViewModel.searchFilter([]);
-            for(var x in locationList)
+            for(var x in locationList())
             {
                 //The actual search here. If we find anything, print it to the page.
-                if(locationList[x].name.toLowerCase().indexOf(value.toLowerCase()) >= 0){
+                if(locationList()[x].name.toLowerCase().indexOf(value.toLowerCase()) >= 0){
 
-                    SearchViewModel.searchFilter.push(locationList[x]);
+                    SearchViewModel.searchFilter.push(locationList()[x]);
                 }
             }
         } else { SearchViewModel.searchFilter([]);}
     },
+
+    getRoute: function(value){
+        //First, get all the locations.
+        //First, reset the marker coloration.
+        if(value != undefined) {
+            for(var x in locationList())
+            {
+                locationList()[x].locationMarker.setIcon('images/red-dot.png');
+            }
+            selectedMarker = locationList().map(function(e) { return e.name }).indexOf(value);
+            if(selectedMarker != -1) {
+            locationList()[selectedMarker].locationMarker.setIcon('images/blue-dot.png');
+            map.setCenter({lat:locationList()[selectedMarker].lat, lng:locationList()[selectedMarker].lng});
+            }
+        }
+    }    
 }
 
+//Dummied out for now.
+/*
 function showCorrespondingMarker() {
     //First, reset the marker coloration.
     console.log(highlightedLocation);
@@ -276,17 +294,18 @@ function showCorrespondingMarker() {
     //Won't work in legacy browsers like IE8.
     var selectedMarker = locationList.map(function(e) { return e.name}).indexOf(optionMarker);
 
-    /* Centers the camera and turns the corresponding marker blue (Initially green, but colorblind people would complain).
-    Got some info from http://stackoverflow.com/questions/2818984/google-map-api-v3-center-zoom-on-displayed-markers; it might be irrelevant now.
-    */
+    //Centers the camera and turns the corresponding marker blue (Initially green, but colorblind people would complain).
+    //Got some info from http://stackoverflow.com/questions/2818984/google-map-api-v3-center-zoom-on-displayed-markers; it might be irrelevant now.
+    
     if(selectedMarker != -1) {
         locationList[selectedMarker].locationMarker.setIcon('http://maps.google.com/mapfiles/ms/icons/blue-dot.png');
         map.setCenter({lat:locationList[selectedMarker].lat, lng:locationList[selectedMarker].lng});
     }
 
 }
+*/
 
-
+//Starts EVERYTHING when jQuery is loaded.
 jQuery(function( $ ) {
     google.maps.event.addDomListener(window, 'load', initialize);
     ko.applyBindings(SearchViewModel);
