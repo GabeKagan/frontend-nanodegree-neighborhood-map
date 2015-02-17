@@ -64,17 +64,20 @@ var locationList = [
     new neighborhoodLocation("Valparaiso",-33.1163955,-71.5650318,"The &#34;Jewel of the Pacific&#34;. Then Panama stole its thunder."),
     new neighborhoodLocation("Cusco",-13.5300193,-71.9392491,"Filler"),
     new neighborhoodLocation("Dublin",53.3243201,-6.251695,"More emeralds per capita than anywhere outside Colombia."),
-    new neighborhoodLocation("London",51.5286416,-0.1015987,"Filler"),
+    new neighborhoodLocation("London",51.5286416,-0.1015987,"London was on its way to being the world capital, before the rest of the world caught up."),
     new neighborhoodLocation("Brussels",50.8387,4.363405,"Yes to the waffles... no to the sprouts."),
     new neighborhoodLocation("Amsterdam",52.3747158,4.8986142,"Filler"),
     new neighborhoodLocation("Frankfurt",50.121212,8.6365638,"I would have to brush up on my German before coming here."),
     new neighborhoodLocation("Hamburg",53.558572,9.9278215,"Second only to Berlin."),
-    new neighborhoodLocation("Berlin",52.5075419,13.4251364,"Filler"),
+    new neighborhoodLocation("Berlin",52.5075419,13.4251364,"Second to none, if Germans are your pleasure."),
+    new neighborhoodLocation("Copenhagen",55.6712674,12.5608388,"Oop, looks like we're getting into metallic territory."),
+    new neighborhoodLocation("Gothenburg",57.7019548,11.8936825,"Home to its own eponymous metal scene."),
+    new neighborhoodLocation("Oslo",59.8938549,10.7851165,"Filler"),
+    new neighborhoodLocation("Stockholm",59.326142,17.9875455,"Filler"),
+    new neighborhoodLocation("Helsinki",60.1733244,24.9410248,"Filler"),
+    new neighborhoodLocation("Saint Petersburg",59.9174455,30.3250575,"Filler"),
     
     //Get coords for: 
-
-    //Dublin, London, Brussels, Amsterdam, Frankfurt, Hamburg, Berlin
-    //Copenhagen, Gothenburg, Oslo, Stockholm, Helsinki, Saint Petersburg,
     //Gdansk, Warsaw, Krakow, Prague, Budapest, Vienna, Zurich, Milan, Rome
     //Istanbul, Damascus, Tel Aviv, Cairo, Tunis, Algiers, Tangier, Casablanca
     //Moscow, Kazan, Yekaterinburg, Novosibirsk, Irkutsk, Vladivostok, Magadan

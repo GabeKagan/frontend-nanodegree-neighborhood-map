@@ -17,14 +17,15 @@
         
         <div id="searchbar">
             <br/> 
+            <p>We need more flavor text in sector 7!</p>
             <p>Type here to search the list of marked locations:
             <input placeholder = "Location" type="search" data-bind="value: searchPrompt, valueUpdate: 'input'" autocomplete="off">
             </p>
         </div>
+        <!--Refactor the search function to output to locationList, so that the user can click on filtered locations to recenter the map.-->
         <div id="locationListDisplay">
-            <select id="locationOptions" multiple="multiple" width="50" data-bind="value: highlightedLocation, options:HTMLLocs, click:showCorrespondingMarker()"></select>
+            <select id="locationOptions" multiple="true" width="50" data-bind="value: highlightedLocation, options:HTMLLocs, click:showCorrespondingMarker()"></select>
         </div>
-        <!--Template for the search function under construction-->
         <ul data-bind='template: {name:"filteredLocations", foreach:searchFilter}'></ul>
         <script type="text/html" id="filteredLocations">
             <li>
