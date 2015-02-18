@@ -4,28 +4,28 @@ html, body {
     font-size: 14px;
 }
 /*@media (min-width: 480 px) {*/
-    #map-box {
-        height: 70%;
-        display: flex;
-    }
+#map-box {
+    height: 70%;
+    display: flex;
+}
 
-    #map-canvas {
-        height: 100%; margin: 0; padding: 0;
-        width: 60%;
+/*IMPORTANT! Redesign this CSS so that the map resizes properly and elements move around properly below 480 px.
+See http://stackoverflow.com/questions/15943326/media-queries-google-map-not-displaying-right-on-window-resize
+*/
+#map-canvas {
+    height: 100%; margin: 0; padding: 0;
+    width: 60%;
+}
 
-
-    }
-
-    #APIContents {
+#APIContents {
     float: right;
     width: 40%;
-    }
+}
 
-    #search-bar {
-        height: 30%;
-
-        width: 100%;
-    }
+#search-bar {
+    height: 30%;
+    width: 100%;
+}
 
 
 #legalese {

@@ -116,18 +116,18 @@ function moveWindow(neighborhoodLocation) {
     this.lat = neighborhoodLocation.lat;
     this.lng = neighborhoodLocation.lng;
 
-    //We'll add an image to this later.
+    //We'll add an image to this later in the function.
     contentString = '<div id="infoWindow"> <p>' + contentString + '</p> </div>';
 
     //Makes some AJAX requests.
     getRedditData(neighborhoodLocation);
     getWikipediaPage(neighborhoodLocation);
 
-    //Data and function for a request to the Google Places API
+    //Data and function for a request to the Google Places API; this also uses AJAX
     var pictureRequest = {
         location: {lat: this.lat, lng: this.lng,},
-        radius: '5000',
-        //We need this variable to ensure photos are returned, but it reduces the quality of the photos.
+        radius: '3000',
+        //We need this variable to ensure photos are returned, but it doesn't return very relevant photos.
         name: name,
     }
     pictureService.nearbySearch(pictureRequest, getLocalLandmark);
@@ -147,8 +147,8 @@ function getLocalLandmark(results, status){
         //See https://developers.google.com/places/documentation/photos.
         if(place.photos != undefined){
             photoList = place.photos[0];
-            //console.log(photoList);
             photoURL = photoList.getUrl({'maxWidth': 200, 'maxHeight': 200});
+            console.log(photoURL);
             $("#infoWindow").append('<img src = "' + photoURL + '" alt="Image from Google Places API">')
             //As part of Google's policies, I am required to show the attribution for these pictures.
             if(photoList.html_attributions[0] != undefined){
@@ -192,10 +192,10 @@ function getWikipediaPage(neighborhoodLocation) {
     this.name = neighborhoodLocation.name;
     wikiHTML = ""; //Cleanup
     var wikiUrl = 'http://en.wikipedia.org/w/api.php?action=opensearch&search=' + name + '&format=json&callback=wikiCallback';
-    //Uncomment and modify when ready to set a timeout.
-    //var wikiRequestTimeout = setTimeout(function(){
-    //    wikiHTML = "Sorry, we didn't manage to get a Wikipedia page for this place.";
-    //}, 8000);
+    //Timeout isn't working yet.
+    var wikiRequestTimeout = setTimeout(function(){
+        wikiHTML = "Sorry, we didn't manage to get a Wikipedia page for this place.";
+    }, 8000);
     $.ajax({
         url: wikiUrl,
         dataType: "jsonp",
@@ -210,7 +210,10 @@ function getWikipediaPage(neighborhoodLocation) {
                 "<p>" + articleExcerpt + "</p>";
             //console.log(wikiHTML);
 
-            //clearTimeout(wikiRequestTimeout);
+            clearTimeout(wikiRequestTimeout);
+        },
+        error: function() {
+            wikiHTML = "Sorry, we didn't manage to get a Wikipedia page for this place.";
         }
     }).done(function() { SearchViewModel.wikiHTML(wikiHTML); });
 }
