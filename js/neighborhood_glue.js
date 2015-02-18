@@ -76,9 +76,16 @@ var locationList = ko.observableArray([
     new neighborhoodLocation("Stockholm",59.326142,17.9875455,"Filler"),
     new neighborhoodLocation("Helsinki",60.1733244,24.9410248,"Filler"),
     new neighborhoodLocation("Saint Petersburg",59.9174455,30.3250575,"Filler"),
-    
+    new neighborhoodLocation("Gdańsk",54.3580866,18.6605014,"Filler"),
+    new neighborhoodLocation("Warsaw",52.232938,21.0611941,"Filler"),
+    new neighborhoodLocation("Krakow",50.0467656,20.0048731,"Hey there everyone, this is Krakow!"),
+    new neighborhoodLocation("Prague",50.0596696,14.4656239,"Filler"),
+    new neighborhoodLocation("Budapest",47.4805856,19.1303031,"I wrote a paper on 19th century Budapest in college."),
+    new neighborhoodLocation("Vienna",48.2206849,16.3800599,"Vienna used to be the capital of a massive empire."),
+    new neighborhoodLocation("Zurich",47.377455,8.536715,"I enjoy some portion of Swiss ancestry."),
+    new neighborhoodLocation("Milan",45.4627338,9.1777323,"Filler"),
+    new neighborhoodLocation("Rome",41.9100711,12.5359979,"Filler"),  
     //Get coords for: 
-    //Gdansk, Warsaw, Krakow, Prague, Budapest, Vienna, Zurich, Milan, Rome
     //Istanbul, Damascus, Tel Aviv, Cairo, Tunis, Algiers, Tangier, Casablanca
     //Moscow, Kazan, Yekaterinburg, Novosibirsk, Irkutsk, Vladivostok, Magadan
     //Seoul, Tokyo, Osaka, Harbin, Nanjing, Taipei, Xiamen, Urumqi, Ulaanbaatar
