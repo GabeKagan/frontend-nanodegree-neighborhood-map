@@ -230,7 +230,7 @@ function initialize() {
     }
     for(var i=0;i<locationList().length;++i)
     {
-        SearchViewModel.HTMLLocs.push(locationList()[i].name);
+        //SearchViewModel.HTMLLocs.push(locationList()[i].name);
     }
 
 }
@@ -250,25 +250,28 @@ var SearchViewModel = {
         if(value != "")
         {
             SearchViewModel.searchFilter([]);
+            SearchViewModel.HTMLLocs([]);
             for(var x in locationList())
             {
                 //The actual search here. If we find anything, print it to the page.
                 if(locationList()[x].name.toLowerCase().indexOf(value.toLowerCase()) >= 0){
-
-                    SearchViewModel.searchFilter.push(locationList()[x]);
+                    //SearchViewModel.searchFilter.push(locationList()[x]);
+                    SearchViewModel.HTMLLocs.push(locationList()[x].name);
                 }
             }
         } else { SearchViewModel.searchFilter([]);}
     },
-
+    //Eventually will be extended with the much promised "traveling salesman" algorithm.
     getRoute: function(value){
-        //First, get all the locations.
-        //First, reset the marker coloration.
+        //Formerly showCorrespondingMarker(), but refactored for KnockoutJS. 
+        //Runs if anything is selected in the search-generated list.
         if(value != undefined) {
+            //Start by resetting the coloration of all the markers.
             for(var x in locationList())
             {
                 locationList()[x].locationMarker.setIcon('images/red-dot.png');
             }
+            //Then figure out which marker's in use. Center on it and turn blue if it's valid.
             selectedMarker = locationList().map(function(e) { return e.name }).indexOf(value);
             if(selectedMarker != -1) {
             locationList()[selectedMarker].locationMarker.setIcon('images/blue-dot.png');

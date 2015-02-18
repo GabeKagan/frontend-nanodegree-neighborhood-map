@@ -24,7 +24,7 @@
         </div>
         <!--The list display will be used to implement a traveling salesman algorithm.-->
         <div id="locationListDisplay">
-            <select id="locationOptions" multiple="false" width="50" data-bind="value: highlightedLocation, options:HTMLLocs, click:getRoute(highlightedLocation())"></select>
+            <select id="locationOptions" multiple="false" width="50" data-bind="value: highlightedLocation, options:HTMLLocs(), optionsCaption:'Results will show up when you start searching.', click:getRoute(highlightedLocation())"></select>
         </div>
         <ul data-bind='template: {name:"filteredLocations", foreach:searchFilter}'></ul>
         <script type="text/html" id="filteredLocations">
