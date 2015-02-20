@@ -256,22 +256,21 @@ var SearchViewModel = {
     highlightedLocation: ko.observableArray(),
     //The way the applet is built now, you don't add new locations.
     search: function(value){
-        //Only search and populate the list if the user types in something.
-        if(value != "")
+        //We need cleanup every time, but only run the actual search if there's a value.
+        SearchViewModel.searchFilter([]);
+        SearchViewModel.HTMLLocs([]);
+        for(var x in locationList())
         {
-            SearchViewModel.searchFilter([]);
-            SearchViewModel.HTMLLocs([]);
+            changeMarkerColor(locationList()[x].locationMarker, "red");
+        }
+        if(value != ""){
             for(var x in locationList())
             {
-                changeMarkerColor(locationList()[x].locationMarker, "red");
-                //If we find locations whose names contain the search string, we turn them yellow.
                 if(locationList()[x].name.toLowerCase().indexOf(value.toLowerCase()) >= 0){
                     changeMarkerColor(locationList()[x].locationMarker, "yellow");
                     SearchViewModel.HTMLLocs.push(locationList()[x].name);
                 }
             }
-        } else { 
-            SearchViewModel.searchFilter([]);
         }
     },
     getRoute: function(value){
