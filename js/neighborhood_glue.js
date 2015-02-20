@@ -13,7 +13,7 @@ var searchPrompt = "";
 var contentWindow = new google.maps.InfoWindow({
     content: "Debug",
 });
-var redditHTML, wikiHTML, photoURL, photoList, pictureService, placeDetails, highlightedLocation, selectedMarker;
+var redditHTML, wikiHTML, photoURL, photoList, pictureService, placeDetails, highlightedLocation, selectedMarker, iconColor;
 
 
 //Takes an item from locationList and preps it for display by running some API calls.
@@ -263,15 +263,17 @@ var SearchViewModel = {
             SearchViewModel.HTMLLocs([]);
             for(var x in locationList())
             {
-                //The actual search here. If we find anything, print it to the page.
+                changeMarkerColor(locationList()[x].locationMarker, "red");
+                //If we find locations whose names contain the search string, we turn them yellow.
                 if(locationList()[x].name.toLowerCase().indexOf(value.toLowerCase()) >= 0){
-                    //SearchViewModel.searchFilter.push(locationList()[x]);
+                    changeMarkerColor(locationList()[x].locationMarker, "yellow");
                     SearchViewModel.HTMLLocs.push(locationList()[x].name);
                 }
             }
-        } else { SearchViewModel.searchFilter([]);}
+        } else { 
+            SearchViewModel.searchFilter([]);
+        }
     },
-    //Eventually will be extended with the much promised "traveling salesman" algorithm.
     getRoute: function(value){
         //Formerly showCorrespondingMarker(), but refactored for KnockoutJS. 
         //Runs if anything is selected in the search-generated list.
@@ -279,16 +281,34 @@ var SearchViewModel = {
             //Start by resetting the coloration of all the markers.
             for(var x in locationList())
             {
-                locationList()[x].locationMarker.setIcon('images/red-dot.png');
+                changeMarkerColor(locationList()[x].locationMarker, "red");
             }
             //Then figure out which marker's in use. Center on it and turn blue if it's valid.
             selectedMarker = locationList().map(function(e) { return e.name }).indexOf(value);
             if(selectedMarker != -1) {
-            locationList()[selectedMarker].locationMarker.setIcon('images/blue-dot.png');
-            map.setCenter({lat:locationList()[selectedMarker].lat, lng:locationList()[selectedMarker].lng});
+                changeMarkerColor(locationList()[selectedMarker].locationMarker, "blue");;
+                map.setCenter({lat:locationList()[selectedMarker].lat, lng:locationList()[selectedMarker].lng});
             }
         }
     }    
+}
+
+//Since we're always changing these markers, I thought it might come in handy.
+function changeMarkerColor(neighborhoodLocation, color){
+    this.neighborhoodLocation = neighborhoodLocation;
+    this.locationMarker = neighborhoodLocation.locationMarker;
+    switch(color) {
+        case "red": //Location is not "selected" in any fashion
+            iconColor = 'images/red-dot.png';
+            break;
+        case "yellow": //Location got caught by the search function
+            iconColor = 'images/yellow-dot.png';
+            break;
+        case "blue": //User has actually clicked on the location
+            iconColor = 'images/blue-dot.png';
+            break;
+    }
+    neighborhoodLocation.setIcon(iconColor);
 }
 
 //Dummied out for now.
