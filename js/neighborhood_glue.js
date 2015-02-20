@@ -51,14 +51,14 @@ var locationList = ko.observableArray([
     new neighborhoodLocation("Philadelphia",40.0047528,-75.1180329,"How civic of me."),
     new neighborhoodLocation("Atlanta",33.7677129,-84.420604,"Sure, why not?"),
     new neighborhoodLocation("New Orleans",30.0219504,-89.8830829,"Just not during hurricane season..."),
-    new neighborhoodLocation("Toronto",43.7182713,-79.3777061,"Filler"),
+    new neighborhoodLocation("Toronto",43.7182713,-79.3777061,"Canadian enough for you?"),
     new neighborhoodLocation("Montreal",45.5601451,-73.7120832,"I went to Montreal once when I was five years old."),
-    new neighborhoodLocation("Chicago",41.8337329,-87.7321555,"Filler"),
+    new neighborhoodLocation("Chicago",41.8337329,-87.7321555,"When the levee breaks, this is where you go."),
     new neighborhoodLocation("Austin",30.2638839,-97.7437884,"Keep Austin weird!"),
     new neighborhoodLocation("Portland",45.5424364,-122.654422,"Less wildfire prone than California. I should hope."),
     new neighborhoodLocation("Seattle",47.614848,-122.3359059,"It's all grungy."),
     new neighborhoodLocation("Vancouver",49.2569684,-123.1239135,"Beginning to notice my love of cities?"),
-    new neighborhoodLocation("Rio de Janeiro",-22.066452,-42.9232368,"Filler"),
+    new neighborhoodLocation("Rio de Janeiro",-22.066452,-42.9232368,"Brazil is an interesting nation to play as in Civilization V."),
     new neighborhoodLocation("Montevideo",-34.8200027,-56.2292752,"Uraguay is apparently quite nice these days."),
     new neighborhoodLocation("Buenos Aires",-34.6158533,-58.4332985,"I used to know a person from here."),
     new neighborhoodLocation("Valparaiso",-33.1163955,-71.5650318,"The &#34;Jewel of the Pacific&#34;. Then Panama stole its thunder."),
@@ -84,7 +84,15 @@ var locationList = ko.observableArray([
     new neighborhoodLocation("Vienna",48.2206849,16.3800599,"Vienna used to be the capital of a massive empire."),
     new neighborhoodLocation("Zurich",47.377455,8.536715,"I enjoy some portion of Swiss ancestry."),
     new neighborhoodLocation("Milan",45.4627338,9.1777323,"Filler"),
-    new neighborhoodLocation("Rome",41.9100711,12.5359979,"Filler"),  
+    new neighborhoodLocation("Rome",41.9100711,12.5359979,"Filler"),
+    new neighborhoodLocation("Istanbul",41.0053215,29.0121795,"Was Constantinople. Now it's Istanbul."),
+    new neighborhoodLocation("Damascus",33.5074755,36.2828954,"Insert groanworthy steel joke here. I'll have to wait until the region is more stable."),
+    new neighborhoodLocation("Tel Aviv",32.0878802,34.797246,"See Damascus, replace steel with whatever the main export of Tel Aviv is."),
+    new neighborhoodLocation("Cairo",30.0594885,31.2584644,"Filler"),
+    new neighborhoodLocation("Tunis",36.7948829,10.1432776,"Filler"),
+    new neighborhoodLocation("Algiers",36.752887,3.042048,"Filler"),
+    new neighborhoodLocation("Tangier",35.7632691,-5.8336522,"Filler"),
+    new neighborhoodLocation("Casablanca",33.5719036,-7.5873685,"An entire city full of film buffs? ...probably not."),
     //Get coords for: 
     //Istanbul, Damascus, Tel Aviv, Cairo, Tunis, Algiers, Tangier, Casablanca
     //Moscow, Kazan, Yekaterinburg, Novosibirsk, Irkutsk, Vladivostok, Magadan
@@ -117,7 +125,7 @@ function moveWindow(neighborhoodLocation) {
     this.lng = neighborhoodLocation.lng;
 
     //We'll add an image to this later in the function.
-    contentString = '<div id="infoWindow"> <p>' + contentString + '</p> </div>';
+    contentString = '<div id="infoWindow"> <p> <strong>Developer&#39;s note:</strong> ' + contentString + '</p> </div>';
 
     //Makes some AJAX requests.
     getRedditData(neighborhoodLocation);
@@ -142,13 +150,12 @@ function moveWindow(neighborhoodLocation) {
 function getLocalLandmark(results, status){
     if (status == google.maps.places.PlacesServiceStatus.OK) {
         var place = results[0];
-        //console.log(place);
         //If we get a place and a photo at all, then it's time to construct a request and add it to the page.
         //See https://developers.google.com/places/documentation/photos.
         if(place.photos != undefined){
             photoList = place.photos[0];
             photoURL = photoList.getUrl({'maxWidth': 200, 'maxHeight': 200});
-            console.log(photoURL);
+            //console.log(photoURL);
             $("#infoWindow").append('<img src = "' + photoURL + '" alt="Image from Google Places API">')
             //As part of Google's policies, I am required to show the attribution for these pictures.
             if(photoList.html_attributions[0] != undefined){
