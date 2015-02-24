@@ -221,8 +221,8 @@ function getWikipediaPage(neighborhoodLocation) {
             var mainArticle = response[1][0];
             var articleExcerpt = response[2][0];
             var articleURL = response[3][0];
-            wikiHTML = "<div id='wikiData'><a href='" + articleURL + "'>" + mainArticle + "</a> - " +
-                "<p>" + articleExcerpt + "</p>";
+            wikiHTML = "<div id='wikiData'><p><a href='" + articleURL + "'>" + mainArticle + "</a> - " +
+                articleExcerpt + "</p>";
             //console.log(wikiHTML);
 
             clearTimeout(wikiRequestTimeout);
