@@ -93,8 +93,15 @@ var locationList = ko.observableArray([
     new neighborhoodLocation("Algiers",36.752887,3.042048,"Filler"),
     new neighborhoodLocation("Tangier",35.7632691,-5.8336522,"Filler"),
     new neighborhoodLocation("Casablanca",33.5719036,-7.5873685,"An entire city full of film buffs? ...probably not."),
+    new neighborhoodLocation("Moscow",55.749792,37.632495,"Filler"), 
+    new neighborhoodLocation("Kazan",55.7955015,49.073303,"Filler"), 
+    new neighborhoodLocation("Yekaterinburg",56.813891,60.6549335,"Gateway to the Urals."), 
+    new neighborhoodLocation("Novosibirsk",54.969977,82.9494049,"As opposed to Omsk, the fortress of winged doom."), 
+    new neighborhoodLocation("Irkutsk",52.2983873,104.26715,"You summerniks really burn me up!"), 
+    new neighborhoodLocation("Vladivostok",43.173706,132.0358371,"Filler"), 
+    new neighborhoodLocation("Magadan",59.5675693,150.8212876,"Yeah, it's a little chilly, but why should that stop you?"),
     //Get coords for: 
-    //Istanbul, Damascus, Tel Aviv, Cairo, Tunis, Algiers, Tangier, Casablanca
+
     //Moscow, Kazan, Yekaterinburg, Novosibirsk, Irkutsk, Vladivostok, Magadan
     //Seoul, Tokyo, Osaka, Harbin, Nanjing, Taipei, Xiamen, Urumqi, Ulaanbaatar
     //Add more locations like Central Asia, India, Southeast Asia, Australia/NZ, Subsaharan Africa
@@ -191,6 +198,7 @@ function getRedditData(neighborhoodLocation) {
             redditConstructor += '<li><a href="' + redditurl +'">' + title + '</a></li>';
             
         }
+        if(redditConstructor == "") { redditConstructor = "We didn't find anything about " + name + " on /r/travel. Perhaps people just aren't interested?"}
         //console.log(redditConstructor);
     }).done(function() { SearchViewModel.redditHTML(redditConstructor); });
 }
@@ -213,8 +221,8 @@ function getWikipediaPage(neighborhoodLocation) {
             var mainArticle = response[1][0];
             var articleExcerpt = response[2][0];
             var articleURL = response[3][0];
-            wikiHTML = "<div id='wikiData'><a href='" + articleURL + "'>" + mainArticle + "</a> - " +
-                "<p>" + articleExcerpt + "</p>";
+            wikiHTML = "<div id='wikiData'><p><a href='" + articleURL + "'>" + mainArticle + "</a> - " +
+                articleExcerpt + "</p>";
             //console.log(wikiHTML);
 
             clearTimeout(wikiRequestTimeout);

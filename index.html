@@ -14,8 +14,7 @@
   <body>
         
         <div id="searchbar">
-            <br/> 
-            <p>We need more flavor text in sector 7!</p>
+            <br/>
             <p>Type here to search the list of marked locations:
             <input placeholder = "Location" type="search" data-bind="value: searchPrompt, valueUpdate: 'input'" autocomplete="off">
             </p>
@@ -37,9 +36,9 @@
             <div id="map-canvas"> </div>
             <!--This div should be moved into the infoWindow.-->
             <div id="APIContents">
-                Discussions on Reddit: <span data-bind="html: redditHTML"></span>
+                <strong>Discussions on Reddit:</strong> <span data-bind="html: redditHTML"></span>
                 <br/>
-                Wikipedia: <span data-bind="html: wikiHTML"></span>
+                <strong>Wikipedia:</strong> <span data-bind="html: wikiHTML"></span>
             </div>
         </div>
 
