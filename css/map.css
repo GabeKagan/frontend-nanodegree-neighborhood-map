@@ -15,18 +15,19 @@ See http://stackoverflow.com/questions/15943326/media-queries-google-map-not-dis
     position: absolute;
 }
 
-#APIContents {
-    /*float: right;*/
-    /*width: 40%;*/
-    z-index: 1;
-}
-
 #searchUI {
     position: absolute;
     width: 30%;
     right: 0px;
+    padding-left: 5px;
+    padding-right: 5px;
 
 }
+
+#APIContents {
+    z-index: 1;
+}
+
 
 #search-bar {
     height: 30%;
@@ -42,10 +43,15 @@ See http://stackoverflow.com/questions/15943326/media-queries-google-map-not-dis
     bottom: 0px;
     z-index: 1;
     pointer-events: none;
+    
+}
+
+#legalese p {
+    margin: 0px;
 }
 
 .translucentUI {
-    background-color: rgba(128,128,128,0.5);
+    background-color: rgba(128,128,128,0.25);
 }
 
 

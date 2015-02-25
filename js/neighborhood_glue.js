@@ -141,7 +141,7 @@ function moveWindow(neighborhoodLocation) {
     //Data and function for a request to the Google Places API; this also uses AJAX
     var pictureRequest = {
         location: {lat: this.lat, lng: this.lng,},
-        radius: '3000',
+        radius: '5000',
         //We need this variable to ensure photos are returned, but it doesn't return very relevant photos.
         name: name,
     }
@@ -167,8 +167,8 @@ function getLocalLandmark(results, status){
             //As part of Google's policies, I am required to show the attribution for these pictures.
             if(photoList.html_attributions[0] != undefined){
                 $("#infoWindow").append('<p>Source: ' + photoList.html_attributions[0] + '</p>');
-            } else {$("#infoWindow").append("<p>Google doesn't seem to know where this image came from.</p>");}
-        }else { $("#infoWindow").append('No image, beautify this error'); }
+            } else {$("#infoWindow").append("<p>Google Places has no attribution information for this picture.</p>");}
+        }else { $("#infoWindow").append('<p>Google Places has no pictures for this location.</p>'); }
 
         //console.log($("#infoWindow").html());
         return place;
@@ -236,7 +236,11 @@ function getWikipediaPage(neighborhoodLocation) {
 function initialize() {
     var mapOptions = {
         center: { lat: 40.7033121, lng: -73.979681},
-        zoom: 4
+        zoom: 4,
+        mapTypeControl: true,
+        mapTypeControlOptions: {
+            position: google.maps.ControlPosition.TOP_CENTER
+            },
         };
 
     map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
