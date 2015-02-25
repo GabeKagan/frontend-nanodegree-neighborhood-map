@@ -4,36 +4,49 @@ html, body {
     font-size: 14px;
 }
 /*@media (min-width: 480 px) {*/
-#map-box {
-    height: 70%;
-    display: flex;
-}
 
 /*IMPORTANT! Redesign this CSS so that the map resizes properly and elements move around properly below 480 px.
 See http://stackoverflow.com/questions/15943326/media-queries-google-map-not-displaying-right-on-window-resize
 */
 #map-canvas {
     height: 100%; margin: 0; padding: 0;
-    width: 60%;
+    width: 100%;
+    z-index: 0;
+    position: absolute;
 }
 
 #APIContents {
-    float: right;
-    width: 40%;
+    /*float: right;*/
+    /*width: 40%;*/
+    z-index: 1;
+}
+
+#searchUI {
+    position: absolute;
+    width: 30%;
+    right: 0px;
+
 }
 
 #search-bar {
     height: 30%;
     width: 100%;
+    z-index: 1;
 }
 
 
 #legalese {
     font-family: Tahoma, serif;
     font-size: 12px;
-    position: relative;
+    position: fixed;
+    bottom: 0px;
+    z-index: 1;
+    pointer-events: none;
 }
 
+.translucentUI {
+    background-color: rgba(128,128,128,0.5);
+}
 
 
 /*
