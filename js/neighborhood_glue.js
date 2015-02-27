@@ -100,11 +100,16 @@ var locationList = ko.observableArray([
     new neighborhoodLocation("Irkutsk",52.2983873,104.26715,"You summerniks really burn me up!"), 
     new neighborhoodLocation("Vladivostok",43.173706,132.0358371,"Filler"), 
     new neighborhoodLocation("Magadan",59.5675693,150.8212876,"Yeah, it's a little chilly, but why should that stop you?"),
-    //Get coords for: 
-
-    //Moscow, Kazan, Yekaterinburg, Novosibirsk, Irkutsk, Vladivostok, Magadan
-    //Seoul, Tokyo, Osaka, Harbin, Nanjing, Taipei, Xiamen, Urumqi, Ulaanbaatar
-    //Add more locations like Central Asia, India, Southeast Asia, Australia/NZ, Subsaharan Africa
+    new neighborhoodLocation("Seoul",37.5651,126.98955,"You must construct additional pylons."),
+    new neighborhoodLocation("Tokyo",35.673343,139.710388,"Filler"),
+    new neighborhoodLocation("Osaka",34.6784,135.49515,"If I ever get to Japan, I'm going to try and see more than just the Tokyo megalopolis."),
+    new neighborhoodLocation("Harbin",45.75723,126.6520214,"Dude! Ice sculptures!"),
+    new neighborhoodLocation("Nanjing",32.0992691,118.7377506,"Why here instead of elsewhere in China? ...Iuno."),
+    new neighborhoodLocation("Taipei",24.3394104,121.9430084,"Filler"),
+    new neighborhoodLocation("Xiamen",24.4791977,118.1092072,"Depicted in parts of <i>REAMDE</i> by Neal Stephenson."),
+    new neighborhoodLocation("Urumqi",43.8217127,87.5627517,"Filler"),
+    new neighborhoodLocation("Ulaanbaatar",47.8916501,106.9018714,"Filler"),
+    //Add more locations, maybe, like Central Asia, India, Southeast Asia, Australia/NZ, Subsaharan Africa
 
 ]);
 
