@@ -12,29 +12,25 @@
 
   </head>
   <body>
-        
-        <div id="searchbar">
-            <br/>
-            <p>Type here to search the list of marked locations:
-            <input placeholder = "Location" type="search" data-bind="value: searchPrompt, valueUpdate: 'input'" autocomplete="off">
-            </p>
-        </div>
-        <!--The list display will be used to implement a traveling salesman algorithm.-->
-        <div id="locationListDisplay">
-            <select id="locationOptions" multiple="false" width="50" data-bind="value: highlightedLocation, options:HTMLLocs(), optionsCaption:'Results will show up when you start searching.', click:getRoute(highlightedLocation())"></select>
-        </div>
-        <ul data-bind='template: {name:"filteredLocations", foreach:searchFilter}'></ul>
-        <script type="text/html" id="filteredLocations">
-            <li>
-                <strong data-bind="text:name"></strong>
-            </li>
-        </script>
-        <p>Click a marker to get links, commentary, and a picture.</p>
+        <div id="map-canvas"> </div>
+        <div id="searchUI" class="translucentUI">
+            <div id="searchbar">
+                <p>Type here to search the list of marked locations:
+                <input placeholder = "Location" type="search" data-bind="value: searchPrompt, valueUpdate: 'input'" autocomplete="off">
+                </p>
+            </div>
 
-        <!--Experimentally moving the map canvas to the bottom of the layout in the name of responsive design-->
-        <div id = "map-box">
-            <div id="map-canvas"> </div>
-            <!--This div should be moved into the infoWindow.-->
+            <div id="locationListDisplay">
+                <select id="locationOptions" multiple="false" width="50" data-bind="value: highlightedLocation, options:HTMLLocs(), optionsCaption:'Results will show up when you start searching.', click:getRoute(highlightedLocation())"></select>
+            </div>
+            <ul data-bind='template: {name:"filteredLocations", foreach:searchFilter}'></ul>
+            <script type="text/html" id="filteredLocations">
+                <li>
+                    <strong data-bind="text:name"></strong>
+                </li>
+            </script>
+            <p>Click a marker to get links, commentary, and a picture.</p>
+
             <div id="APIContents">
                 <strong>Discussions on Reddit:</strong> <span data-bind="html: redditHTML"></span>
                 <br/>
@@ -42,10 +38,13 @@
             </div>
         </div>
 
-        <footer id="legalese">
-            <img src="images/powered-by-google-on-white.png" alt="Powered by Google" style="width:104px,height:16px">
+
+
+        <footer id="legalese" class="translucentUI">
+            
             <p>This application is powered by the Google Maps API.
-            Users are bound by <a href="https://www.google.com/intl/en/policies/terms">Google's Terms of Service</a>, and should also consider Google's <a href="https://www.google.com/policies/privacy">privacy policy</a>. 
+            Users are bound by <a href="https://www.google.com/intl/en/policies/terms">Google's Terms of Service</a>, and should also heed Google's <a href="https://www.google.com/policies/privacy">privacy policy</a>. 
+            <img src="images/powered-by-google-on-white.png" alt="Powered by Google" style="width:104px,height:16px">
             </p>
         </footer>
 
