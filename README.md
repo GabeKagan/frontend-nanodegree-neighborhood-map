@@ -13,3 +13,5 @@ From a technical stance, all of this code appears to be working, and reasonably 
 Now for the positives - this applet makes good use of the required Knockout framework to separate its data and UI, which had the side effect of making asynchronous implementation of data pulls easier once I figured out how and why. All required functionality should be implemented and bug free, and in some cases extended beyond the requirements in logical ways. Furthermore, I've upgraded my "build" process to make usage of node.js and Gulp, which gives me a more robust minification process than the Microsoft Ajax Minifier I used in the last project.
 
 A live version of this website is available at http://gabekagan.github.io/frontend-nanodegree-neighborhood-map/. Its functionality should be synchronized with the development version at all times.
+
+To the best of my knowledge, any implementations I got from other sources should be mentioned in the comments of the master branch's code.
