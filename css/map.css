@@ -21,6 +21,7 @@ See http://stackoverflow.com/questions/15943326/media-queries-google-map-not-dis
     right: 0px;
     padding-left: 5px;
     padding-right: 5px;
+    min-width: 300px;
 
 }
 

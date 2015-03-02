@@ -315,8 +315,9 @@ var SearchViewModel = {
             //Then figure out which marker's in use. Center on it and turn blue if it's valid.
             selectedMarker = locationList().map(function(e) { return e.name }).indexOf(value);
             if(selectedMarker != -1) {
-                changeMarkerColor(locationList()[selectedMarker].locationMarker, "blue");;
+                changeMarkerColor(locationList()[selectedMarker].locationMarker, "blue");
                 map.setCenter({lat:locationList()[selectedMarker].lat, lng:locationList()[selectedMarker].lng});
+                moveWindow(locationList()[selectedMarker]);
             }
         }
     }    
