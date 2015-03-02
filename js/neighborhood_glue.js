@@ -173,11 +173,11 @@ function getLocalLandmark(results, status){
             if(photoList.html_attributions[0] != undefined){
                 $("#infoWindow").append('<p>Source: ' + photoList.html_attributions[0] + '</p>');
             } else {$("#infoWindow").append("<p>Google Places has no attribution information for this picture.</p>");}
-        }else { $("#infoWindow").append('<p>Google Places has no pictures for this location.</p>'); }
 
-        //console.log($("#infoWindow").html());
+        } else { $("#infoWindow").append('<p>Google Places has no pictures for this location.</p>'); }
         return place;
-    } //Add a failure image of some sort for usability's sake
+    //If the request is completely unsuccessful, inform the user of our humiliation.
+    } else { $("#infoWindow").append("<p>It looks like our Google Places API request completely failed! <br> <img id = 'sadFace' src = 'images/sadface.png' alt='Pixelated sad face'></p>"); } //Add a failure image of some sort for usability's sake
 }
 
 //Note things from here at that point: http://stackoverflow.com/questions/15317796/knockout-loses-bindings-when-google-maps-api-v3-info-window-is-closed
@@ -204,8 +204,11 @@ function getRedditData(neighborhoodLocation) {
             
         }
         if(redditConstructor == "") { redditConstructor = "We didn't find anything about " + name + " on /r/travel. Perhaps people just aren't interested?"}
-        //console.log(redditConstructor);
-    }).done(function() { SearchViewModel.redditHTML(redditConstructor); });
+        //At the end of the function, either send our shiny HTML to Knockout or inform the user the AJAX request failed.
+    }).done(function() { SearchViewModel.redditHTML(redditConstructor); 
+    }).error(function() { 
+        SearchViewModel.redditHTML("<p>Unable to get any response from Reddit at all. This could be caused by, amongst other things, Reddit going down in flames. <br> <img id = 'sadFace' src = 'images/sadface.png' alt='Pixelated sad face'> </p>") 
+    });
 }
 
 function getWikipediaPage(neighborhoodLocation) {
@@ -235,7 +238,10 @@ function getWikipediaPage(neighborhoodLocation) {
         error: function() {
             wikiHTML = "Sorry, we didn't manage to get a Wikipedia page for this place.";
         }
-    }).done(function() { SearchViewModel.wikiHTML(wikiHTML); });
+    }).done(function() { SearchViewModel.wikiHTML(wikiHTML); 
+    }).error(function() {
+        SearchViewModel.wikiHTML("<p>Unable to get any response from Wikipedia at all. Did you forget to donate? <br> <img id = 'sadFace' src = 'images/sadface.png' alt='Pixelated sad face'> </p>");
+    });
 }
 
 function initialize() {
