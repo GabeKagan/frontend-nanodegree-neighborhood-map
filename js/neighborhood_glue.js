@@ -1,11 +1,12 @@
 //Globals. We need a bunch of these.
-var map, infowindow;
+var map;
 var searchPrompt = "";
 var contentWindow = new google.maps.InfoWindow({
     content: "Debug"
 });
 var redditHTML, wikiHTML, photoURL, photoList, pictureService, placeDetails; 
-var highlightedLocation, selectedMarker, iconColor, locationList;
+var highlightedLocation, selectedMarker, iconColor;
+var locationList = ko.observableArray();
 
 //Starts EVERYTHING when jQuery is loaded.
 jQuery(function( $ ) {
@@ -28,17 +29,12 @@ function initialize() {
 
     map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
     pictureService = new google.maps.places.PlacesService(map);
-
-    infowindow = new google.maps.infoWindow({
-        content: "Test",
-    });
-
     //Displays the markers and populates the HTML list. 
-    for(var i=0;i<Model.locationList().length;++i)
+    for(var i=0;i<locationList().length;++i)
     {
-        addMarker(Model.locationList()[i]);
+        addMarker(locationList()[i]);
     }
-    for(var i=0;i<Model.locationList().length;++i)
+    for(var i=0;i<locationList().length;++i)
     {
         //ViewModel.HTMLLocs.push(Model.locationList()[i].name);
     }
@@ -126,10 +122,9 @@ var Model = function () {
         self.lat = lat;
         self.lng = lng;
 
-        //Placeholder. Later, if we don't have a coordinate, try to get something from geocoding.
-        if(lat = undefined) { lat = 0;}
-        if(lng = undefined) { lng = 0;}
-
+        //Placeholder. Latitude and longitude are hardcoded, so replace this with an error.
+        if(lat === undefined) { lat = 0;}
+        if(lng === undefined) { lng = 0;}
 
         //The initial comment string is a personal comment on the area.
         //Expand content string to include API pulls, HTML, etc. and such.
@@ -174,11 +169,13 @@ var ViewModel = {
             changeMarkerColor(locationList()[x].locationMarker, "red");
         }
         if(value != ""){
-            for(var x in Model.locationList())
+
+            for(var x in locationList()) //Refactored funciton can't find locationList!
             {
-                if(Model.locationList()[x].name.toLowerCase().indexOf(value.toLowerCase()) >= 0){
-                    changeMarkerColor(Model.locationList()[x].locationMarker, "yellow");
-                    ViewModel.HTMLLocs.push(Model.locationList()[x].name);
+                console.log("Test");
+                if(locationList()[x].name.toLowerCase().indexOf(value.toLowerCase()) >= 0){
+                    changeMarkerColor(locationList()[x].locationMarker, "yellow");
+                    ViewModel.HTMLLocs.push(locationList()[x].name);
                 }
             }
         }
