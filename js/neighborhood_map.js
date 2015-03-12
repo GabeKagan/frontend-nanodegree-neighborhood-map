@@ -28,7 +28,8 @@ function initialize() {
     pictureService = new google.maps.places.PlacesService(map);
 
     Model();
-    console.log(locationList());
+    View();
+    //console.log(locationList());
 
     //Move these to View().
     for(var i=0;i<locationList().length;++i)
@@ -237,6 +238,23 @@ var View = function () {
         google.maps.event.addListener(locationMarker, 'click', function() {
             moveWindow(neighborhoodLocation);    
         });
+    }
+
+    changeMarkerColor = function(neighborhoodLocation, color){
+        this.neighborhoodLocation = neighborhoodLocation;
+        this.locationMarker = neighborhoodLocation.locationMarker;
+        switch(color) {
+            case "red": //Location is not "selected" in any fashion
+                iconColor = 'images/red-dot.png';
+                break;
+            case "yellow": //Location got caught by the search function
+                iconColor = 'images/yellow-dot.png';
+                break;
+            case "blue": //User has actually clicked on the location
+                iconColor = 'images/blue-dot.png';
+                break;
+        }
+        neighborhoodLocation.setIcon(iconColor);
     }
 
 }
