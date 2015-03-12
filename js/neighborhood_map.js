@@ -59,6 +59,67 @@ var Model = function() {
             icon: "images/red-dot.png",
         });
     },
+
+    getRedditData = function(neighborhoodLocation) {
+        this.name = neighborhoodLocation.name;
+        //Pull five posts mentioning our location from Reddit's "travel" API
+        var redditRequestURL = "http://www.reddit.com/r/travel/search.json?q=" + name + "&limit=5&sort=relevance&restrict_sr=0";
+        var redditConstructor = "If you see this message, debug the Reddit functions.";
+        $.getJSON(redditRequestURL, function(postSet){
+            redditConstructor = "";
+            var listing = postSet.data.children;
+            //Iterate through the list and get some tags we can put in the HTML.
+            for(var i = 0; i < listing.length; i++) {
+                var obj = listing[i].data;
+                var title = obj.title;
+                //var subtime = obj.created_utc;
+                var votes = obj.score;
+                var redditurl = "http://www.reddit.com"+obj.permalink;
+                //Create the HTML tags we need
+                redditConstructor += '<li class="redditLink"><a href="' + redditurl +'">' + title + '</a></li>';
+                
+            }
+            if(redditConstructor == "") { redditConstructor = "We didn't find anything about " + name + " on /r/travel. Perhaps people just aren't interested?"}
+            //At the end of the function, either send our shiny HTML to Knockout or inform the user the AJAX request failed.
+        }).done(function() { ViewModel.redditHTML(redditConstructor); 
+        }).error(function() { 
+            ViewModel.redditHTML("<p>Unable to get any response from Reddit at all. This could be caused by, amongst other things, Reddit going down in flames. <br> <img id = 'sadFace' src = 'images/sadface.png' alt='Pixelated sad face'> </p>") 
+        });
+    },
+
+    getWikipediaPage = function(neighborhoodLocation) {
+        this.name = neighborhoodLocation.name;
+        wikiHTML = ""; //Cleanup
+        var wikiUrl = 'http://en.wikipedia.org/w/api.php?action=opensearch&search=' + name + '&format=json&callback=wikiCallback';
+        //Timeout isn't working yet.
+        var wikiRequestTimeout = setTimeout(function(){
+            wikiHTML = "Sorry, we didn't manage to get a Wikipedia page for this place.";
+        }, 8000);
+        $.ajax({
+            url: wikiUrl,
+            dataType: "jsonp",
+            jsonp: "callback",
+            success: function( response ) {
+                //console.log(response);
+                //Variable defines for sanity and overall code readability.
+                var mainArticle = response[1][0];
+                var articleExcerpt = response[2][0];
+                var articleURL = response[3][0];
+                wikiHTML = "<div id='wikiData'><p><a href='" + articleURL + "'>" + mainArticle + "</a> - " +
+                    articleExcerpt + "</p>";
+                //console.log(wikiHTML);
+
+                clearTimeout(wikiRequestTimeout);
+            },
+            error: function() {
+                wikiHTML = "Sorry, we didn't manage to get a Wikipedia page for this place.";
+            }
+        }).done(function() { ViewModel.wikiHTML(wikiHTML); 
+        }).error(function() {
+            ViewModel.wikiHTML("<p>Unable to get any response from Wikipedia at all. Did you forget to donate? <br> <img id = 'sadFace' src = 'images/sadface.png' alt='Pixelated sad face'> </p>");
+        });
+    },    
+
     locationList = ko.observableArray([
     new neighborhoodLocation("Boston",42.3283505,-71.0605903,"It's less than an hour away from home!"),
     new neighborhoodLocation("New York",40.7033121,-73.979681,"Only ever been to upstate New York."),
@@ -205,18 +266,18 @@ var ViewModel = {
         this.lat = neighborhoodLocation.lat;
         this.lng = neighborhoodLocation.lng;
 
-        //We'll add an image to this later in the function.
-        contentString = '<div id="infoWindow"> <p> <strong>Developer&#39;s note:</strong> ' + contentString + '</p> </div>';
+        //contentString neews some formatting.
+        //contentString = '<div id="infoWindow"> <p> <strong>Developer&#39;s note:</strong> ' + contentString + '</p> </div>';
 
         //Makes some AJAX requests.
         getRedditData(neighborhoodLocation);
         getWikipediaPage(neighborhoodLocation);
 
-        //Data and function for a request to the Google Places API; this also uses AJAX
+        //Data and function for a request to the Google Places API; this also uses AJAX.
         var pictureRequest = {
             location: {lat: this.lat, lng: this.lng,},
             radius: '5000',
-            //We need this variable to ensure photos are returned, but it doesn't return very relevant photos.
+            //We need this variable to ensure photos are returned, but the photos aren't very good.
             name: name,
         }
         pictureService.nearbySearch(pictureRequest, getLocalLandmark);
@@ -236,7 +297,7 @@ var View = function () {
 
         locationMarker.setMap(map);
         google.maps.event.addListener(locationMarker, 'click', function() {
-            moveWindow(neighborhoodLocation);    
+            ViewModel.moveWindow(neighborhoodLocation);    
         });
     }
 
