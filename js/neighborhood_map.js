@@ -6,7 +6,10 @@
 var neighborhoodLocation;
 var locationList;
 var addMarker;
-
+var contentWindow = new google.maps.InfoWindow({
+    content: "If you see this, something went very wrong."
+});
+//var contentString;
 
 
 jQuery(function( $ ) {
@@ -118,7 +121,28 @@ var Model = function() {
         }).error(function() {
             ViewModel.wikiHTML("<p>Unable to get any response from Wikipedia at all. Did you forget to donate? <br> <img id = 'sadFace' src = 'images/sadface.png' alt='Pixelated sad face'> </p>");
         });
-    },    
+    },   
+
+    getLocalLandmark = function(results, status){
+        if (status === google.maps.places.PlacesServiceStatus.OK) {
+            var place = results[0];
+            //If we get a place and a photo at all, then it's time to construct a request and add it to the page.
+            //See https://developers.google.com/places/documentation/photos.
+            if(place.photos != undefined){
+                photoList = place.photos[0];
+                photoURL = photoList.getUrl({'maxWidth': 200, 'maxHeight': 200});
+                //console.log(photoURL);
+                $("#infoWindow").append('<img src = "' + photoURL + '" alt="Image from Google Places API">')
+                //As part of Google's policies, I am required to show the attribution for these pictures.
+                if(photoList.html_attributions[0] != undefined){
+                    $("#infoWindow").append('<p>Source: ' + photoList.html_attributions[0] + '</p>');
+                } else {$("#infoWindow").append("<p>Google Places has no attribution information for this picture.</p>");}
+
+            } else { $("#infoWindow").append('<p>Google Places has no pictures for this location.</p>'); }
+            return place;
+        //If the request is completely unsuccessful, inform the user of our humiliation.
+        } else { $("#infoWindow").append("<p>It looks like our Google Places API request completely failed! <br> <img id = 'sadFace' src = 'images/sadface.png' alt='Pixelated sad face'></p>"); }
+    }, 
 
     locationList = ko.observableArray([
     new neighborhoodLocation("Boston",42.3283505,-71.0605903,"It's less than an hour away from home!"),
@@ -210,7 +234,6 @@ var ViewModel = {
 
             for(var i in locationList()) //Refactored funciton can't find locationList!
             {
-                console.log("Test");
                 if(locationList()[i].name.toLowerCase().indexOf(value.toLowerCase()) >= 0){
                     changeMarkerColor(locationList()[i].locationMarker, "yellow");
                     ViewModel.HTMLLocs.push(locationList()[i].name);
@@ -237,37 +260,17 @@ var ViewModel = {
         }
     },
 
-    getLocalLandmark: function(results, status){
-        if (status === google.maps.places.PlacesServiceStatus.OK) {
-            var place = results[0];
-            //If we get a place and a photo at all, then it's time to construct a request and add it to the page.
-            //See https://developers.google.com/places/documentation/photos.
-            if(place.photos != undefined){
-                photoList = place.photos[0];
-                photoURL = photoList.getUrl({'maxWidth': 200, 'maxHeight': 200});
-                //console.log(photoURL);
-                $("#infoWindow").append('<img src = "' + photoURL + '" alt="Image from Google Places API">')
-                //As part of Google's policies, I am required to show the attribution for these pictures.
-                if(photoList.html_attributions[0] != undefined){
-                    $("#infoWindow").append('<p>Source: ' + photoList.html_attributions[0] + '</p>');
-                } else {$("#infoWindow").append("<p>Google Places has no attribution information for this picture.</p>");}
-
-            } else { $("#infoWindow").append('<p>Google Places has no pictures for this location.</p>'); }
-            return place;
-        //If the request is completely unsuccessful, inform the user of our humiliation.
-        } else { $("#infoWindow").append("<p>It looks like our Google Places API request completely failed! <br> <img id = 'sadFace' src = 'images/sadface.png' alt='Pixelated sad face'></p>"); }
-    },
-
     //moveWindow gets the content and position from the location, and attaches to the marker.
     moveWindow: function(neighborhoodLocation) {
-        this.name = neighborhoodLocation.name;
-        this.contentString = neighborhoodLocation.contentString;
-        this.locationMarker = neighborhoodLocation.locationMarker;
-        this.lat = neighborhoodLocation.lat;
-        this.lng = neighborhoodLocation.lng;
+        name = neighborhoodLocation.name;
+        contentString = neighborhoodLocation.contentString;
+        locationMarker = neighborhoodLocation.locationMarker;
+        lat = neighborhoodLocation.lat;
+        lng = neighborhoodLocation.lng;
 
-        //contentString neews some formatting.
-        //contentString = '<div id="infoWindow"> <p> <strong>Developer&#39;s note:</strong> ' + contentString + '</p> </div>';
+        //This entire function needs debugging! It needs to be cleaned after each click,
+        //and puts the window at the coordinates of the last item in locationList no matter where I click.
+        contentString = '<div id="infoWindow"> <p> <strong>Developer&#39;s note:</strong> ' + contentString + '</p> </div>';
 
         //Makes some AJAX requests.
         getRedditData(neighborhoodLocation);
@@ -275,13 +278,14 @@ var ViewModel = {
 
         //Data and function for a request to the Google Places API; this also uses AJAX.
         var pictureRequest = {
-            location: {lat: this.lat, lng: this.lng,},
+            location: {lat: lat, lng: lng,},
             radius: '5000',
             //We need this variable to ensure photos are returned, but the photos aren't very good.
             name: name,
         }
         pictureService.nearbySearch(pictureRequest, getLocalLandmark);
         contentWindow.setContent(contentString);
+        //Why doesn't this use the lat and lng we get? Check on this.
         contentWindow.setPosition({lat: locationMarker.position.lat(), lng: locationMarker.position.lng()});
         contentWindow.open(map);
     }
@@ -294,6 +298,7 @@ var View = function () {
         this.lat = neighborhoodLocation.lat;
         this.lng = neighborhoodLocation.lng;
         this.locationMarker = neighborhoodLocation.locationMarker;
+        this.contentString = neighborhoodLocation.contentString;
 
         locationMarker.setMap(map);
         google.maps.event.addListener(locationMarker, 'click', function() {
