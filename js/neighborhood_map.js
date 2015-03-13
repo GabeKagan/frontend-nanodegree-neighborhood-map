@@ -241,24 +241,6 @@ var ViewModel = {
             }
         }
     },
-    getRoute: function(value){
-        //Formerly showCorrespondingMarker(), but refactored for KnockoutJS. 
-        //Runs if anything is selected in the search-generated list.
-        if(value != undefined) {
-            //Start by resetting the coloration of all the markers.
-            for(var i in Model.locationList())
-            {
-                changeMarkerColor(Model.locationList()[i].locationMarker, "red");
-            }
-            //Then figure out which marker's in use. Center on it and turn blue if it's valid.
-            selectedMarker = Model.locationList().map(function(e) { return e.name }).indexOf(value);
-            if(selectedMarker != -1) {
-                changeMarkerColor(Model.locationList()[selectedMarker].locationMarker, "blue");
-                map.setCenter({lat:Model.locationList()[selectedMarker].lat, lng:Model.locationList()[selectedMarker].lng});
-                moveWindow(Model.locationList()[selectedMarker]);
-            }
-        }
-    },
 
     //moveWindow gets the content and position from the location, and attaches to the marker.
     moveWindow: function(neighborhoodLocation) {
@@ -288,6 +270,25 @@ var ViewModel = {
         //Why doesn't this use the lat and lng we get? Check on this.
         contentWindow.setPosition({lat: locationMarker.position.lat(), lng: locationMarker.position.lng()});
         contentWindow.open(map);
+    },
+
+    getRoute: function(value){
+        //Formerly showCorrespondingMarker(), but refactored for KnockoutJS. 
+        //Runs if anything is selected in the search-generated list.
+        if(value != undefined) {
+            //Start by resetting the coloration of all the markers.
+            for(var i in locationList())
+            {
+                changeMarkerColor(locationList()[i].locationMarker, "red");
+            }
+            //Then figure out which marker's in use. Center on it and turn blue if it's valid.
+            selectedMarker = locationList().map(function(e) { return e.name }).indexOf(value);
+            if(selectedMarker != -1) {
+                changeMarkerColor(locationList()[selectedMarker].locationMarker, "blue");
+                map.setCenter({lat:locationList()[selectedMarker].lat, lng:locationList()[selectedMarker].lng});
+                ViewModel.moveWindow(locationList()[selectedMarker]);
+            }
+        }
     }
 }
 
