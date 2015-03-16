@@ -223,9 +223,10 @@ var ViewModel = {
     wikiHTML: ko.observable(''),
     highlightedLocation: ko.observableArray(),
     listButtonName: ko.observable('Switch to List View'),
-    //The way the applet is built now, you don't add new locations.
     search: function(value){
-        //We need cleanup every time, but only run the actual search if there's a value.
+        //We need cleanup every time, but only run the actual search if there's a value and listIsSearchable is true. 
+        
+        
         ViewModel.searchFilter([]);
         ViewModel.HTMLLocs([]);
         for(var i in locationList())
@@ -234,14 +235,19 @@ var ViewModel = {
         }
         if(value != ""){
 
-            for(var i in locationList()) //Refactored funciton can't find locationList!
+            for(var i in locationList()) 
             {
-                if(locationList()[i].name.toLowerCase().indexOf(value.toLowerCase()) >= 0){
-                    changeMarkerColor(locationList()[i].locationMarker, "yellow");
+                if(listIsSearchable === true){
+                    if(locationList()[i].name.toLowerCase().indexOf(value.toLowerCase()) >= 0){
+                        changeMarkerColor(locationList()[i].locationMarker, "yellow");
+                        ViewModel.HTMLLocs.push(locationList()[i].name);
+                    }
+                } else {
                     ViewModel.HTMLLocs.push(locationList()[i].name);
                 }
             }
         }
+        
     },
 
     //moveWindow gets the content and position from the location, and attaches to the marker.
