@@ -285,7 +285,7 @@ var ViewModel = {
         contentWindow.open(map);
     },
 
-    getRoute: function(value){
+    goToMarker: function(value){
         //Formerly showCorrespondingMarker(), but refactored for KnockoutJS. 
         //Runs if anything is selected in the search-generated list.
         if(value != undefined) {
@@ -304,7 +304,8 @@ var ViewModel = {
         }
     },
     //Changes whether the list in the upper right displays all locations or lets you search for them.
-    //Also updates the name as needed.
+    //Might need to be updated to use Knockout's "If" binding.
+    //Definitely needs to be updated so that the list doesn't disappear when the search prompt is empty.
     changeSearchBarFunction: function(value){
         if(listIsSearchable === true) 
         { 
