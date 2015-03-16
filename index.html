@@ -17,6 +17,9 @@
         <div id="map-canvas"> </div>
         <div id="searchUI" class="translucentUI">
             <p>Add an unfiltered list!</p>
+            <div id="listButton">
+                <button data-bind="click:changeSearchBarFunction, html: listButtonName"></button>
+            </div>
             <div id="searchbar">
                 <p>Type here to search the list of marked locations:
                 <input placeholder = "Location" type="search" data-bind="value: searchPrompt, valueUpdate: 'input'" autocomplete="off">

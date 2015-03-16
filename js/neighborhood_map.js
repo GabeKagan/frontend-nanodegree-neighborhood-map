@@ -1,5 +1,5 @@
-//A complete refactoring/rewrite of the old code, which was getting so disorganized that it could not even break.
-//However, refactoring is creating scoping issues.
+//Refactoring's mostly complete. Now add more functionality.
+//Example: Inform the user when the Google APIs appear to be blocked.
 
 (function() {
 //Globals?
@@ -9,6 +9,7 @@ var addMarker;
 var contentWindow = new google.maps.InfoWindow({
     content: "If you see this, something went very wrong."
 });
+var listIsSearchable = true;
 //var contentString;
 
 
@@ -16,7 +17,7 @@ jQuery(function( $ ) {
     google.maps.event.addDomListener(window, 'load', initialize);
     ko.applyBindings(ViewModel);
     ViewModel.searchPrompt.subscribe(ViewModel.search);
-});
+}); 
 
 function initialize() {
     var mapOptions = {
@@ -215,12 +216,13 @@ var Model = function() {
 var ViewModel = {
     //This might need to be merged into a "controller" with showCorrespondingMarker below.
     //Implementation cribbed from http://opensoul.org/2011/06/23/live-search-with-knockoutjs/
-    searchPrompt: ko.observable(""),
+    searchPrompt: ko.observable(''),
     HTMLLocs: ko.observableArray(),
     searchFilter: ko.observableArray(),
-    redditHTML: ko.observable(""),
-    wikiHTML: ko.observable(""),
+    redditHTML: ko.observable(''),
+    wikiHTML: ko.observable(''),
     highlightedLocation: ko.observableArray(),
+    listButtonName: ko.observable('Switch to List View'),
     //The way the applet is built now, you don't add new locations.
     search: function(value){
         //We need cleanup every time, but only run the actual search if there's a value.
@@ -288,6 +290,18 @@ var ViewModel = {
                 map.setCenter({lat:locationList()[selectedMarker].lat, lng:locationList()[selectedMarker].lng});
                 ViewModel.moveWindow(locationList()[selectedMarker]);
             }
+        }
+    },
+    //Changes whether the list in the upper right displays all locations or lets you search for them.
+    //Also updates the name as needed.
+    changeSearchBarFunction: function(value){
+        if(listIsSearchable === true) 
+        { 
+            listIsSearchable = false;
+            ViewModel.listButtonName('Switch to Search Prompt');
+        } else { 
+            listIsSearchable = true; 
+            ViewModel.listButtonName('Switch to List View');
         }
     }
 }
