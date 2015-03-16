@@ -16,20 +16,18 @@
   <body>
         <div id="map-canvas"> </div>
         <div id="searchUI" class="translucentUI">
-            <p>Add an unfiltered list!</p>
+            <br>
             <div id="listButton">
                 <button data-bind="click:changeSearchBarFunction, html: listButtonName"></button>
             </div>
             <div id="searchbar">
-                <p>Type here to search the list of marked locations:
+                <p>Type here to activate the current list functionality.</p>
                 <input placeholder = "Location" type="search" data-bind="value: searchPrompt, valueUpdate: 'input'" autocomplete="off">
-                </p>
             </div>
-
+            <br>
             <div id="locationListDisplay">
                 <select id="locationOptions" multiple="false" width="50" data-bind="value: highlightedLocation, options:HTMLLocs(), optionsCaption:'Results will show up when you start searching.', click:getRoute(highlightedLocation())"></select>
             </div>
-            <ul data-bind='template: {name:"filteredLocations", foreach:searchFilter}'></ul>
             <script type="text/html" id="filteredLocations">
                 <li>
                     <strong data-bind="text:name"></strong>

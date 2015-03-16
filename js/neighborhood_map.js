@@ -9,7 +9,7 @@ var addMarker;
 var contentWindow = new google.maps.InfoWindow({
     content: "If you see this, something went very wrong."
 });
-var listIsSearchable = true;
+var listIsSearchable = false;
 //var contentString;
 
 
@@ -40,6 +40,8 @@ function initialize() {
     {
         addMarker(locationList()[i]); //Needs scope fixing.
     }
+
+    ViewModel.populateList();
 
 }
 
@@ -218,16 +220,19 @@ var ViewModel = {
     //Implementation cribbed from http://opensoul.org/2011/06/23/live-search-with-knockoutjs/
     searchPrompt: ko.observable(''),
     HTMLLocs: ko.observableArray(),
-    searchFilter: ko.observableArray(),
     redditHTML: ko.observable(''),
     wikiHTML: ko.observable(''),
     highlightedLocation: ko.observableArray(),
-    listButtonName: ko.observable('Switch to List View'),
+    listButtonName: ko.observable('Switch to Search Prompt'),
+    //A useful utility function for when we want to fill the list without filtering it.
+    populateList: function(){
+        for(var i in locationList())
+        {
+            ViewModel.HTMLLocs.push(locationList()[i].name);
+        }
+    },
     search: function(value){
         //We need cleanup every time, but only run the actual search if there's a value and listIsSearchable is true. 
-        
-        
-        ViewModel.searchFilter([]);
         ViewModel.HTMLLocs([]);
         for(var i in locationList())
         {
@@ -303,11 +308,16 @@ var ViewModel = {
     changeSearchBarFunction: function(value){
         if(listIsSearchable === true) 
         { 
-            listIsSearchable = false;
+            listIsSearchable = false; //Switch to list mode.
             ViewModel.listButtonName('Switch to Search Prompt');
+            //ViewModel.searchPrompt('');
+            ViewModel.populateList();
+            
         } else { 
-            listIsSearchable = true; 
+            listIsSearchable = true; //Switch to search mode.
             ViewModel.listButtonName('Switch to List View');
+            ViewModel.searchPrompt('');
+            ViewModel.HTMLLocs([]);
         }
     }
 }
