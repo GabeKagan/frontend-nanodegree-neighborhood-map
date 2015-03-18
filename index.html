@@ -4,10 +4,11 @@
     <title>Tour the World!</title>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
     <meta charset="utf-8">
-    <link rel="stylesheet" type="text/css" href="css/map.css"/>
+    <link rel="stylesheet" href="css/common.css"> 
+    <link rel="stylesheet" media="screen and (min-width: 641px)" href="css/map.css">
+    <link rel="stylesheet" media="screen and (max-width: 640px)" href="css/mobile.css"> 
 
     <script src="https://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyCeG1ftdGJnxx6m8lN_qrS1NrOIoXD1Vz4"></script>
-    <!--Unique to the production version of this code.-->
     <script src="js/main.js"></script>
 
   </head>
@@ -15,24 +16,29 @@
         <div id="map-canvas"> </div>
         <div id="searchUI" class="translucentUI">
             <div id="searchbar">
-                <p>Type here to search the list of marked locations:
+                <p><span class="lighterBackground">Activate this list by typing in the search bar.</span></p>
+                <div id="listButton">
+                    <button data-bind="click:changeSearchBarFunction, html: listButtonName"></button>
+                </div>
                 <input placeholder = "Location" type="search" data-bind="value: searchPrompt, valueUpdate: 'input'" autocomplete="off">
-                </p>
             </div>
-
+            <br>
             <div id="locationListDisplay">
-                <select id="locationOptions" multiple="false" width="50" data-bind="value: highlightedLocation, options:HTMLLocs(), optionsCaption:'Results will show up when you start searching.', click:getRoute(highlightedLocation())"></select>
+                <select id="locationOptions" multiple="false" width="50" data-bind="value: highlightedLocation, options:HTMLLocs(), optionsCaption:'Results will show up when you start searching.', click:goToMarker(highlightedLocation())"></select>
             </div>
-            <ul data-bind='template: {name:"filteredLocations", foreach:searchFilter}'></ul>
             <script type="text/html" id="filteredLocations">
                 <li>
                     <strong data-bind="text:name"></strong>
                 </li>
             </script>
             <p>Click a marker to get links, commentary, and a picture.</p>
-
+            <div id = "closeWindowButton" class="onlyMobile">
+                <button data-bind="click:closeInfoWindow, html: closeWindowButtonName"></button>
+            </div>
+            <div id = "minimizeButton"> <img src="images/minimize.png" alt="Minimize button" height="16" width="16"> </div>
+            <h3>Discussions</h3>
             <div id="APIContents">
-                <strong>Discussions on Reddit:</strong> <span data-bind="html: redditHTML"></span>
+                <strong>Reddit:</strong> <span data-bind="html: redditHTML"></span>
                 <br/>
                 <strong>Wikipedia:</strong> <span data-bind="html: wikiHTML"></span>
             </div>

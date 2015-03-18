@@ -45,3 +45,4 @@ Temporary Items
 #node.js/Gulp files
 node_modules/
 js/min_test/gulp_test.js
+hosts

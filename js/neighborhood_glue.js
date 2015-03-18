@@ -1,51 +1,51 @@
-/*
-Possible function for later: Perform "traveling salesman" algorithm on user selected locations to find
-the shortest route between all of them.
-APIs to implement:
-Some sort of weather API (like Weather Channel/Underground, but that has fairly low usage caps)
-A travel API?
-News from locations
-*/
-
 //Globals. We need a bunch of these.
 var map;
 var searchPrompt = "";
 var contentWindow = new google.maps.InfoWindow({
-    content: "Debug",
+    content: "Debug"
 });
-var redditHTML, wikiHTML, photoURL, photoList, pictureService, placeDetails, highlightedLocation, selectedMarker, iconColor;
+var redditHTML, wikiHTML, photoURL, photoList, pictureService, placeDetails; 
+var highlightedLocation, selectedMarker, iconColor;
+var locationList = ko.observableArray();
 
+//Starts EVERYTHING when jQuery is loaded.
+jQuery(function( $ ) {
+    google.maps.event.addDomListener(window, 'load', initialize);
+    ko.applyBindings(ViewModel);
+    ViewModel.searchPrompt.subscribe(ViewModel.search);
+});
 
-//Takes an item from locationList and preps it for display by running some API calls.
-//If we get this from Google Maps API requests, that might help out a bit.
-var neighborhoodLocation = function(name, lat, lng, contentString) {
-    var self = this; //I assume this has to be done to hook things into Knockout.js
-    self.name = name;
-    self.lat = lat;
-    self.lng = lng;
+//Move this back into View().
+//However, things like the addMarker loop may need to go elsewhere.
+function initialize() {
+    var mapOptions = {
+        center: { lat: 40.7033121, lng: -73.979681},
+        zoom: 4,
+        mapTypeControl: true,
+        mapTypeControlOptions: {
+            position: google.maps.ControlPosition.TOP_CENTER
+            },
+        };
 
-    //Placeholder. Later, if we don't have a coordinate, try to get something from geocoding.
-    if(lat = undefined) { lat = 0;}
-    if(lng = undefined) { lng = 0;}
-
-
-    //The initial comment string is a personal comment on the area.
-    //Expand content string to include API pulls, HTML, etc. and such.
-    self.contentString =  contentString;
-
-    //Now for variables derived from the initial ones, and from other sources.
-    self.locationMarker = new google.maps.Marker({
-        title: this.name,
-        position: {lat: this.lat, lng: this.lng,},
-        icon: "images/red-dot.png",
-    });
-
+    map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+    pictureService = new google.maps.places.PlacesService(map);
+    //Displays the markers and populates the HTML list. 
+    for(var i=0;i<locationList().length;++i)
+    {
+        addMarker(locationList()[i]);
+    }
+    for(var i=0;i<locationList().length;++i)
+    {
+        //ViewModel.HTMLLocs.push(Model.locationList()[i].name);
+    }
 }
 
+var Model = function () {
 
 //Create a function that converts Google Maps API data into these?
 //Maybe I should move this to a new file.
-var locationList = ko.observableArray([
+
+    locationList = ko.observableArray([    
     new neighborhoodLocation("Boston",42.3283505,-71.0605903,"It's less than an hour away from home!"),
     new neighborhoodLocation("New York",40.7033121,-73.979681,"Only ever been to upstate New York."),
     new neighborhoodLocation("Philadelphia",40.0047528,-75.1180329,"How civic of me."),
@@ -108,77 +108,175 @@ var locationList = ko.observableArray([
     new neighborhoodLocation("Taipei",24.3394104,121.9430084,"Also the name of a mahjong solitare implementation for Windows 3.1."),
     new neighborhoodLocation("Xiamen",24.4791977,118.1092072,"Depicted in parts of <i>REAMDE</i> by Neal Stephenson."),
     new neighborhoodLocation("Urumqi",43.8217127,87.5627517,"Xinjiang is basically its own country."),
-    new neighborhoodLocation("Ulaanbaatar",47.8916501,106.9018714,"One of the many cities whose name improved over time."),
-    //Add more locations, maybe, like Central Asia, India, Southeast Asia, Australia/NZ, Subsaharan Africa
+    new neighborhoodLocation("Ulaanbaatar",47.8916501,106.9018714,"One of the many cities whose name improved over time.")
+    ]);
 
-]);
 
-//Knockoutify this? More importantly, make this a method of neighborhoodLocation?
-function addMarker(neighborhoodLocation) {
 
-    this.name = neighborhoodLocation.name;
-    this.lat = neighborhoodLocation.lat;
-    this.lng = neighborhoodLocation.lng;
-    this.locationMarker = neighborhoodLocation.locationMarker;
+    //Takes an item from locationList and preps it for display by running some API calls.
+    //If we get this from Google Maps API requests, that might help out a bit.
+    var neighborhoodLocation = function(name, lat, lng, contentString) {
+        var self = this; //I assume this has to be done to hook things into Knockout.js
+        self.name = name;
+        self.contentString =  contentString;
+        self.lat = lat;
+        self.lng = lng;
 
-    locationMarker.setMap(map);
-    google.maps.event.addListener(locationMarker, 'click', function() {
-        moveWindow(neighborhoodLocation);
-        
-    });
-}
+        //Placeholder. Latitude and longitude are hardcoded, so replace this with an error.
+        if(lat === undefined) { lat = 0;}
+        if(lng === undefined) { lng = 0;}
 
-//moveWindow gets the content and position from the location, and attaches to the marker.
-function moveWindow(neighborhoodLocation) {
-    this.name = neighborhoodLocation.name;
-    this.contentString = neighborhoodLocation.contentString;
-    this.locationMarker = neighborhoodLocation.locationMarker;
-    this.lat = neighborhoodLocation.lat;
-    this.lng = neighborhoodLocation.lng;
+        //The initial comment string is a personal comment on the area.
+        //Expand content string to include API pulls, HTML, etc. and such.
+        //Now for variables derived from the initial ones, and from other sources.
+        self.locationMarker = new google.maps.Marker({
+            title: this.name,
+            position: {lat: this.lat, lng: this.lng,},
+            icon: "images/red-dot.png",
+        });
 
-    //We'll add an image to this later in the function.
-    contentString = '<div id="infoWindow"> <p> <strong>Developer&#39;s note:</strong> ' + contentString + '</p> </div>';
+    },
+    //Knockoutify this? More importantly, make this a method of neighborhoodLocation?
+    addMarker = function(neighborhoodLocation) {
+        this.name = neighborhoodLocation.name;
+        this.lat = neighborhoodLocation.lat;
+        this.lng = neighborhoodLocation.lng;
+        this.locationMarker = neighborhoodLocation.locationMarker;
 
-    //Makes some AJAX requests.
-    getRedditData(neighborhoodLocation);
-    getWikipediaPage(neighborhoodLocation);
-
-    //Data and function for a request to the Google Places API; this also uses AJAX
-    var pictureRequest = {
-        location: {lat: this.lat, lng: this.lng,},
-        radius: '5000',
-        //We need this variable to ensure photos are returned, but it doesn't return very relevant photos.
-        name: name,
+        locationMarker.setMap(map);
+        google.maps.event.addListener(locationMarker, 'click', function() {
+            moveWindow(neighborhoodLocation);    
+        });
     }
-    pictureService.nearbySearch(pictureRequest, getLocalLandmark);
-
-    contentWindow.setContent(contentString);
-    //Adding slightly to the latitude makes things look a little better.
-    contentWindow.setPosition({lat: (locationMarker.position.lat() + 0.002), lng: locationMarker.position.lng()});
-
-    contentWindow.open(map);
 }
 
-function getLocalLandmark(results, status){
-    if (status == google.maps.places.PlacesServiceStatus.OK) {
-        var place = results[0];
-        //If we get a place and a photo at all, then it's time to construct a request and add it to the page.
-        //See https://developers.google.com/places/documentation/photos.
-        if(place.photos != undefined){
-            photoList = place.photos[0];
-            photoURL = photoList.getUrl({'maxWidth': 200, 'maxHeight': 200});
-            //console.log(photoURL);
-            $("#infoWindow").append('<img src = "' + photoURL + '" alt="Image from Google Places API">')
-            //As part of Google's policies, I am required to show the attribution for these pictures.
-            if(photoList.html_attributions[0] != undefined){
-                $("#infoWindow").append('<p>Source: ' + photoList.html_attributions[0] + '</p>');
-            } else {$("#infoWindow").append("<p>Google Places has no attribution information for this picture.</p>");}
+var ViewModel = {
+    //This might need to be merged into a "controller" with showCorrespondingMarker below.
+    //Implementation cribbed from http://opensoul.org/2011/06/23/live-search-with-knockoutjs/
+    searchPrompt: ko.observable(""),
+    HTMLLocs: ko.observableArray(),
+    searchFilter: ko.observableArray(),
+    redditHTML: ko.observable(""),
+    wikiHTML: ko.observable(""),
+    highlightedLocation: ko.observableArray(),
+    //The way the applet is built now, you don't add new locations.
+    search: function(value){
+        //We need cleanup every time, but only run the actual search if there's a value.
+        ViewModel.searchFilter([]);
+        ViewModel.HTMLLocs([]);
+        for(var x in locationList())
+        {
+            changeMarkerColor(locationList()[x].locationMarker, "red");
+        }
+        if(value != ""){
 
-        } else { $("#infoWindow").append('<p>Google Places has no pictures for this location.</p>'); }
-        return place;
-    //If the request is completely unsuccessful, inform the user of our humiliation.
-    } else { $("#infoWindow").append("<p>It looks like our Google Places API request completely failed! <br> <img id = 'sadFace' src = 'images/sadface.png' alt='Pixelated sad face'></p>"); } //Add a failure image of some sort for usability's sake
+            for(var x in locationList()) //Refactored funciton can't find locationList!
+            {
+                console.log("Test");
+                if(locationList()[x].name.toLowerCase().indexOf(value.toLowerCase()) >= 0){
+                    changeMarkerColor(locationList()[x].locationMarker, "yellow");
+                    ViewModel.HTMLLocs.push(locationList()[x].name);
+                }
+            }
+        }
+    },
+    getRoute: function(value){
+        //Formerly showCorrespondingMarker(), but refactored for KnockoutJS. 
+        //Runs if anything is selected in the search-generated list.
+        if(value != undefined) {
+            //Start by resetting the coloration of all the markers.
+            for(var x in Model.locationList())
+            {
+                changeMarkerColor(Model.locationList()[x].locationMarker, "red");
+            }
+            //Then figure out which marker's in use. Center on it and turn blue if it's valid.
+            selectedMarker = Model.locationList().map(function(e) { return e.name }).indexOf(value);
+            if(selectedMarker != -1) {
+                changeMarkerColor(Model.locationList()[selectedMarker].locationMarker, "blue");
+                map.setCenter({lat:Model.locationList()[selectedMarker].lat, lng:Model.locationList()[selectedMarker].lng});
+                moveWindow(Model.locationList()[selectedMarker]);
+            }
+        }
+    },
+
+    getLocalLandmark: function(results, status){
+        if (status === google.maps.places.PlacesServiceStatus.OK) {
+            var place = results[0];
+            //If we get a place and a photo at all, then it's time to construct a request and add it to the page.
+            //See https://developers.google.com/places/documentation/photos.
+            if(place.photos != undefined){
+                photoList = place.photos[0];
+                photoURL = photoList.getUrl({'maxWidth': 200, 'maxHeight': 200});
+                //console.log(photoURL);
+                $("#infoWindow").append('<img src = "' + photoURL + '" alt="Image from Google Places API">')
+                //As part of Google's policies, I am required to show the attribution for these pictures.
+                if(photoList.html_attributions[0] != undefined){
+                    $("#infoWindow").append('<p>Source: ' + photoList.html_attributions[0] + '</p>');
+                } else {$("#infoWindow").append("<p>Google Places has no attribution information for this picture.</p>");}
+
+            } else { $("#infoWindow").append('<p>Google Places has no pictures for this location.</p>'); }
+            return place;
+        //If the request is completely unsuccessful, inform the user of our humiliation.
+        } else { $("#infoWindow").append("<p>It looks like our Google Places API request completely failed! <br> <img id = 'sadFace' src = 'images/sadface.png' alt='Pixelated sad face'></p>"); }
+    },
+
+    //moveWindow gets the content and position from the location, and attaches to the marker.
+    moveWindow: function(neighborhoodLocation) {
+        this.name = neighborhoodLocation.name;
+        this.contentString = neighborhoodLocation.contentString;
+        this.locationMarker = neighborhoodLocation.locationMarker;
+        this.lat = neighborhoodLocation.lat;
+        this.lng = neighborhoodLocation.lng;
+
+        //We'll add an image to this later in the function.
+        contentString = '<div id="infoWindow"> <p> <strong>Developer&#39;s note:</strong> ' + contentString + '</p> </div>';
+
+        //Makes some AJAX requests.
+        getRedditData(neighborhoodLocation);
+        getWikipediaPage(neighborhoodLocation);
+
+        //Data and function for a request to the Google Places API; this also uses AJAX
+        var pictureRequest = {
+            location: {lat: this.lat, lng: this.lng,},
+            radius: '5000',
+            //We need this variable to ensure photos are returned, but it doesn't return very relevant photos.
+            name: name,
+        }
+        pictureService.nearbySearch(pictureRequest, getLocalLandmark);
+        contentWindow.setContent(contentString);
+        contentWindow.setPosition({lat: locationMarker.position.lat(), lng: locationMarker.position.lng()});
+        contentWindow.open(map);
+    }
 }
+
+
+
+var View = function () {
+
+    //Since we're always changing these markers, I thought it might come in handy.
+    function changeMarkerColor(neighborhoodLocation, color){
+        this.neighborhoodLocation = neighborhoodLocation;
+        this.locationMarker = neighborhoodLocation.locationMarker;
+        switch(color) {
+            case "red": //Location is not "selected" in any fashion
+                iconColor = 'images/red-dot.png';
+                break;
+            case "yellow": //Location got caught by the search function
+                iconColor = 'images/yellow-dot.png';
+                break;
+            case "blue": //User has actually clicked on the location
+                iconColor = 'images/blue-dot.png';
+                break;
+        }
+        neighborhoodLocation.setIcon(iconColor);
+    }
+
+};
+
+
+
+/* All this code is being refactored. 
+
 
 //Note things from here at that point: http://stackoverflow.com/questions/15317796/knockout-loses-bindings-when-google-maps-api-v3-info-window-is-closed
 //Based on http://speckyboy.com/2014/01/22/building-simple-reddit-api-webapp-using-jquery/
@@ -205,9 +303,9 @@ function getRedditData(neighborhoodLocation) {
         }
         if(redditConstructor == "") { redditConstructor = "We didn't find anything about " + name + " on /r/travel. Perhaps people just aren't interested?"}
         //At the end of the function, either send our shiny HTML to Knockout or inform the user the AJAX request failed.
-    }).done(function() { SearchViewModel.redditHTML(redditConstructor); 
+    }).done(function() { ViewModel.redditHTML(redditConstructor); 
     }).error(function() { 
-        SearchViewModel.redditHTML("<p>Unable to get any response from Reddit at all. This could be caused by, amongst other things, Reddit going down in flames. <br> <img id = 'sadFace' src = 'images/sadface.png' alt='Pixelated sad face'> </p>") 
+        ViewModel.redditHTML("<p>Unable to get any response from Reddit at all. This could be caused by, amongst other things, Reddit going down in flames. <br> <img id = 'sadFace' src = 'images/sadface.png' alt='Pixelated sad face'> </p>") 
     });
 }
 
@@ -238,139 +336,14 @@ function getWikipediaPage(neighborhoodLocation) {
         error: function() {
             wikiHTML = "Sorry, we didn't manage to get a Wikipedia page for this place.";
         }
-    }).done(function() { SearchViewModel.wikiHTML(wikiHTML); 
+    }).done(function() { ViewModel.wikiHTML(wikiHTML); 
     }).error(function() {
-        SearchViewModel.wikiHTML("<p>Unable to get any response from Wikipedia at all. Did you forget to donate? <br> <img id = 'sadFace' src = 'images/sadface.png' alt='Pixelated sad face'> </p>");
+        ViewModel.wikiHTML("<p>Unable to get any response from Wikipedia at all. Did you forget to donate? <br> <img id = 'sadFace' src = 'images/sadface.png' alt='Pixelated sad face'> </p>");
     });
 }
 
-function initialize() {
-    var mapOptions = {
-        center: { lat: 40.7033121, lng: -73.979681},
-        zoom: 4,
-        mapTypeControl: true,
-        mapTypeControlOptions: {
-            position: google.maps.ControlPosition.TOP_CENTER
-            },
-        };
 
-    map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
-    pictureService = new google.maps.places.PlacesService(map);
-
-    //var infowindow = new google.maps.infoWindow({
-    //    content: "Test",
-    //});
-
-    //Turn this into a Knockout observable array, and use a push function to add further stuff?
-    //Add more things to the markers.
-    //Displays the markers and populates the HTML list. 
-    for(var i=0;i<locationList().length;++i)
-    {
-        addMarker(locationList()[i]);
-    }
-    for(var i=0;i<locationList().length;++i)
-    {
-        //SearchViewModel.HTMLLocs.push(locationList()[i].name);
-    }
-
-}
-
-//This might need to be merged into a "controller" with showCorrespondingMarker below.
-//Implementation cribbed from http://opensoul.org/2011/06/23/live-search-with-knockoutjs/
-var SearchViewModel = {
-    searchPrompt: ko.observable(""),
-    HTMLLocs: ko.observableArray(),
-    searchFilter: ko.observableArray(),
-    redditHTML: ko.observable(""),
-    wikiHTML: ko.observable(""),
-    highlightedLocation: ko.observableArray(),
-    //The way the applet is built now, you don't add new locations.
-    search: function(value){
-        //We need cleanup every time, but only run the actual search if there's a value.
-        SearchViewModel.searchFilter([]);
-        SearchViewModel.HTMLLocs([]);
-        for(var x in locationList())
-        {
-            changeMarkerColor(locationList()[x].locationMarker, "red");
-        }
-        if(value != ""){
-            for(var x in locationList())
-            {
-                if(locationList()[x].name.toLowerCase().indexOf(value.toLowerCase()) >= 0){
-                    changeMarkerColor(locationList()[x].locationMarker, "yellow");
-                    SearchViewModel.HTMLLocs.push(locationList()[x].name);
-                }
-            }
-        }
-    },
-    getRoute: function(value){
-        //Formerly showCorrespondingMarker(), but refactored for KnockoutJS. 
-        //Runs if anything is selected in the search-generated list.
-        if(value != undefined) {
-            //Start by resetting the coloration of all the markers.
-            for(var x in locationList())
-            {
-                changeMarkerColor(locationList()[x].locationMarker, "red");
-            }
-            //Then figure out which marker's in use. Center on it and turn blue if it's valid.
-            selectedMarker = locationList().map(function(e) { return e.name }).indexOf(value);
-            if(selectedMarker != -1) {
-                changeMarkerColor(locationList()[selectedMarker].locationMarker, "blue");
-                map.setCenter({lat:locationList()[selectedMarker].lat, lng:locationList()[selectedMarker].lng});
-                moveWindow(locationList()[selectedMarker]);
-            }
-        }
-    }    
-}
-
-//Since we're always changing these markers, I thought it might come in handy.
-function changeMarkerColor(neighborhoodLocation, color){
-    this.neighborhoodLocation = neighborhoodLocation;
-    this.locationMarker = neighborhoodLocation.locationMarker;
-    switch(color) {
-        case "red": //Location is not "selected" in any fashion
-            iconColor = 'images/red-dot.png';
-            break;
-        case "yellow": //Location got caught by the search function
-            iconColor = 'images/yellow-dot.png';
-            break;
-        case "blue": //User has actually clicked on the location
-            iconColor = 'images/blue-dot.png';
-            break;
-    }
-    neighborhoodLocation.setIcon(iconColor);
-}
-
-//Dummied out for now.
-/*
-function showCorrespondingMarker() {
-    //First, reset the marker coloration.
-    console.log(highlightedLocation);
-    for(var x in locationList)
-    {
-        locationList[x].locationMarker.setIcon('http://maps.google.com/mapfiles/ms/icons/red-dot.png');
-    }
-
-    //This returns a DOM element, but rewrite it to use KnockoutJS's methods.
-    var optionMarker = document.getElementById("locationOptions").value;
-    //Get the corresponding index in our list of Google locations, using some prototype.map trickery.
-    //Won't work in legacy browsers like IE8.
-    var selectedMarker = locationList.map(function(e) { return e.name}).indexOf(optionMarker);
-
-    //Centers the camera and turns the corresponding marker blue (Initially green, but colorblind people would complain).
-    //Got some info from http://stackoverflow.com/questions/2818984/google-map-api-v3-center-zoom-on-displayed-markers; it might be irrelevant now.
     
-    if(selectedMarker != -1) {
-        locationList[selectedMarker].locationMarker.setIcon('http://maps.google.com/mapfiles/ms/icons/blue-dot.png');
-        map.setCenter({lat:locationList[selectedMarker].lat, lng:locationList[selectedMarker].lng});
-    }
-
-}
 */
 
-//Starts EVERYTHING when jQuery is loaded.
-jQuery(function( $ ) {
-    google.maps.event.addDomListener(window, 'load', initialize);
-    ko.applyBindings(SearchViewModel);
-    SearchViewModel.searchPrompt.subscribe(SearchViewModel.search);
-});
+

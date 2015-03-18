@@ -1,0 +1,9 @@
+html, body { 
+    font-size: 12px;
+}
+
+#searchUI {
+    width: 98%;
+    left: 1px;
+
+}
