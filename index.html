@@ -18,12 +18,11 @@
   <body>
         <div id="map-canvas"> </div>
         <div id="searchUI" class="translucentUI">
-            <br>
-            <div id="listButton">
-                <button data-bind="click:changeSearchBarFunction, html: listButtonName"></button>
-            </div>
             <div id="searchbar">
-                <p>Type here to activate the current list functionality.</p>
+                <p><span class="lighterBackground">Activate this list by typing in the search bar. </span></p>
+                <div id="listButton">
+                    <button data-bind="click:changeSearchBarFunction, html: listButtonName"></button>
+                </div>
                 <input placeholder = "Location" type="search" data-bind="value: searchPrompt, valueUpdate: 'input'" autocomplete="off">
             </div>
             <br>
@@ -36,9 +35,10 @@
                 </li>
             </script>
             <p>Click a marker to get links, commentary, and a picture.</p>
-
+            <div id = "minimizeButton"> <img src="images/minimize.png" alt="Minimize button" height="16" width="16"> </div>
+            <h3>Discussions</h3>
             <div id="APIContents">
-                <strong>Discussions on Reddit:</strong> <span data-bind="html: redditHTML"></span>
+                <strong>Reddit:</strong> <span data-bind="html: redditHTML"></span>
                 <br/>
                 <strong>Wikipedia:</strong> <span data-bind="html: wikiHTML"></span>
             </div>

@@ -43,6 +43,10 @@ function initialize() {
 
     ViewModel.populateList();
 
+    $("#minimizeButton").click(function(){
+        $("#APIContents").slideToggle();
+    });
+
 }
 
 var Model = function() {
