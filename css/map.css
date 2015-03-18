@@ -5,7 +5,7 @@
 See http://stackoverflow.com/questions/15943326/media-queries-google-map-not-displaying-right-on-window-resize
 */
 
-/* See mobile.css for when the page is smaller than 600px wide.*/
+/* See mobile.css for when the page is smaller than 640px wide.*/
 
 html, body { 
     font-size: 14px;

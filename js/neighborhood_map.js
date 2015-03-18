@@ -7,7 +7,8 @@ var neighborhoodLocation;
 var locationList;
 var addMarker;
 var contentWindow = new google.maps.InfoWindow({
-    content: "If you see this, something went very wrong."
+    content: "If you see this, something went very wrong.",
+    maxWidth: 240
 });
 var listIsSearchable = false;
 //var contentString;
@@ -281,6 +282,13 @@ var ViewModel = {
             name: name,
         }
         pictureService.nearbySearch(pictureRequest, getLocalLandmark);
+        
+        //The infoWindow should be wider on a wider display.
+        if( $(window).width() >= 640) {
+            contentWindow.maxWidth = 360;
+        } else { contentWindow.maxWidth = 240; }
+        
+
         contentWindow.setContent(contentString);
         //Why doesn't this use the lat and lng we get? Check on this.
         contentWindow.setPosition({lat: locationMarker.position.lat(), lng: locationMarker.position.lng()});
