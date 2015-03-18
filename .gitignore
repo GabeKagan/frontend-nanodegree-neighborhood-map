@@ -46,3 +46,4 @@ Temporary Items
 node_modules/
 js/min_test/gulp_test.js
 hosts
+js/main.js
