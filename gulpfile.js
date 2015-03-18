@@ -17,7 +17,7 @@ gulp.task('default', function() {
 });
 
 gulp.task('scripts', function() {
-    return gulp.src('js/*.js')
+    return gulp.src(['js/*.js', '!js/main.js'])
     .pipe(concat('main.js'))
     .pipe(gulp.dest('js/'))
     .pipe(uglify())
