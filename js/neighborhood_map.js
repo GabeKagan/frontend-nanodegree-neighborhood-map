@@ -33,9 +33,7 @@ function initialize() {
 
     Model();
     View();
-    //console.log(locationList());
 
-    //Move these to View().
     for(var i=0;i<locationList().length;++i)
     {
         addMarker(locationList()[i]); //Needs scope fixing.
@@ -43,6 +41,7 @@ function initialize() {
 
     ViewModel.populateList();
 
+    //This should probably go inside MVVM.
     $("#minimizeButton").click(function(){
         $("#APIContents").slideToggle();
     });
@@ -228,6 +227,7 @@ var ViewModel = {
     wikiHTML: ko.observable(''),
     highlightedLocation: ko.observableArray(),
     listButtonName: ko.observable('Switch to Search Prompt'),
+    closeWindowButtonName: ko.observable('Close Marker Window'),
     //A useful utility function for when we want to fill the list without filtering it.
     populateList: function(){
         for(var i in locationList())
@@ -267,8 +267,6 @@ var ViewModel = {
         lat = neighborhoodLocation.lat;
         lng = neighborhoodLocation.lng;
 
-        //This entire function needs debugging! It needs to be cleaned after each click,
-        //and puts the window at the coordinates of the last item in locationList no matter where I click.
         contentString = '<div id="infoWindow"> <p> <strong>Developer&#39;s note:</strong> ' + contentString + '</p> </div>';
 
         //Makes some AJAX requests.
@@ -324,6 +322,9 @@ var ViewModel = {
             ViewModel.searchPrompt('');
             ViewModel.HTMLLocs([]);
         }
+    },
+    closeInfoWindow: function() {
+        contentWindow.close();
     }
 }
 

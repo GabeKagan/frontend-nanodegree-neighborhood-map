@@ -11,7 +11,9 @@ html, body {
     font-size: 14px;
 }
 
-
+.onlyMobile {
+    display: none;
+}
 
 
 

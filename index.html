@@ -19,7 +19,7 @@
         <div id="map-canvas"> </div>
         <div id="searchUI" class="translucentUI">
             <div id="searchbar">
-                <p><span class="lighterBackground">Activate this list by typing in the search bar. </span></p>
+                <p><span class="lighterBackground">Activate this list by typing in the search bar.</span></p>
                 <div id="listButton">
                     <button data-bind="click:changeSearchBarFunction, html: listButtonName"></button>
                 </div>
@@ -35,6 +35,9 @@
                 </li>
             </script>
             <p>Click a marker to get links, commentary, and a picture.</p>
+            <div id = "closeWindowButton" class="onlyMobile">
+                <button data-bind="click:closeInfoWindow, html: closeWindowButtonName"></button>
+            </div>
             <div id = "minimizeButton"> <img src="images/minimize.png" alt="Minimize button" height="16" width="16"> </div>
             <h3>Discussions</h3>
             <div id="APIContents">
