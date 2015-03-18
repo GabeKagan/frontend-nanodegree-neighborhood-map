@@ -1,19 +1,12 @@
-html, body { 
-    height: 100%; margin: 0; padding: 0;
-    font-family: Tahoma, serif;
-    font-size: 14px;
-}
+
 /*@media (min-width: 480 px) {*/
 
 /*IMPORTANT! Redesign this CSS so that the map resizes properly and elements move around properly below 480 px.
 See http://stackoverflow.com/questions/15943326/media-queries-google-map-not-displaying-right-on-window-resize
 */
-#map-canvas {
-    height: 100%; margin: 0; padding: 0;
-    width: 100%;
-    z-index: 0;
-    position: absolute;
-}
+
+/* See mobile.css for when the page is smaller than 600px wide.*/
+
 
 #searchUI {
     position: absolute;

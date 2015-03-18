@@ -1,0 +1,14 @@
+/* See mobile.css for when the page is smaller than 720px wide, and map.css for when it's not.*/
+
+html, body { 
+    height: 100%; margin: 0; padding: 0;
+    font-family: Tahoma, serif;
+    font-size: 14px;
+}
+
+#map-canvas {
+    height: 100%; margin: 0; padding: 0;
+    width: 100%;
+    z-index: 0;
+    position: absolute;
+}
