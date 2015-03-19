@@ -4,14 +4,12 @@
 (function() {
 //Globals?
 var neighborhoodLocation;
-var locationList;
-var addMarker;
+var locationList, addMarker, iconColor;
 var contentWindow = new google.maps.InfoWindow({
     content: "If you see this, something went very wrong.",
     maxWidth: 240
 });
 var listIsSearchable = false;
-//var contentString;
 
 
 jQuery(function( $ ) {
@@ -89,11 +87,11 @@ var Model = function() {
                 redditConstructor += '<li class="redditLink"><a href="' + redditurl +'">' + title + '</a></li>';
                 
             }
-            if(redditConstructor == "") { redditConstructor = "We didn't find anything about " + name + " on /r/travel. Perhaps people just aren't interested?"}
+            if(redditConstructor === "") { redditConstructor = "We didn't find anything about " + name + " on /r/travel. Perhaps people just aren't interested?"; }
             //At the end of the function, either send our shiny HTML to Knockout or inform the user the AJAX request failed.
         }).done(function() { ViewModel.redditHTML(redditConstructor); 
         }).error(function() { 
-            ViewModel.redditHTML("<p>Unable to get any response from Reddit at all. This could be caused by, amongst other things, Reddit going down in flames. <br> <img id = 'sadFace' src = 'images/sadface.png' alt='Pixelated sad face'> </p>") 
+            ViewModel.redditHTML("<p>Unable to get any response from Reddit at all. This could be caused by, amongst other things, Reddit going down in flames. <br> <img id = 'sadFace' src = 'images/sadface.png' alt='Pixelated sad face'> </p>"); 
         });
     },
 
@@ -135,13 +133,13 @@ var Model = function() {
             var place = results[0];
             //If we get a place and a photo at all, then it's time to construct a request and add it to the page.
             //See https://developers.google.com/places/documentation/photos.
-            if(place.photos != undefined){
+            if(place.photos !== undefined){
                 photoList = place.photos[0];
                 photoURL = photoList.getUrl({'maxWidth': 200, 'maxHeight': 200});
                 //console.log(photoURL);
-                $("#infoWindow").append('<img src = "' + photoURL + '" alt="Image from Google Places API">')
+                $("#infoWindow").append('<img src = "' + photoURL + '" alt="Image from Google Places API">');
                 //As part of Google's policies, I am required to show the attribution for these pictures.
-                if(photoList.html_attributions[0] != undefined){
+                if(photoList.html_attributions[0] !== undefined){
                     $("#infoWindow").append('<p>Source: ' + photoList.html_attributions[0] + '</p>');
                 } else {$("#infoWindow").append("<p>Google Places has no attribution information for this picture.</p>");}
 
@@ -217,7 +215,7 @@ var Model = function() {
     new neighborhoodLocation("Ulaanbaatar",47.8916501,106.9018714,"One of the many cities whose name improved over time.")
     ]);
 
-}
+};
 
 var ViewModel = {
     //This might need to be merged into a "controller" with showCorrespondingMarker below.
@@ -243,7 +241,7 @@ var ViewModel = {
         {
             changeMarkerColor(locationList()[i].locationMarker, "red");
         }
-        if(value != ""){
+        if(value !== ""){
 
             for(var i in locationList()) 
             {
@@ -280,7 +278,7 @@ var ViewModel = {
             radius: '5000',
             //We need this variable to ensure photos are returned, but the photos aren't very good.
             name: name,
-        }
+        };
         pictureService.nearbySearch(pictureRequest, getLocalLandmark);
         
         //The infoWindow should be wider on a wider display.
@@ -290,23 +288,24 @@ var ViewModel = {
         
 
         contentWindow.setContent(contentString);
-        //Why doesn't this use the lat and lng we get? Check on this.
         contentWindow.setPosition({lat: locationMarker.position.lat(), lng: locationMarker.position.lng()});
+
+        //Maybe hide parts of the translucent UI if the user has an infoWindow open? Not sure.
         contentWindow.open(map);
     },
 
     goToMarker: function(value){
         //Formerly showCorrespondingMarker(), but refactored for KnockoutJS. 
         //Runs if anything is selected in the search-generated list.
-        if(value != undefined) {
+        if(value !== undefined) {
             //Start by resetting the coloration of all the markers.
             for(var i in locationList())
             {
                 changeMarkerColor(locationList()[i].locationMarker, "red");
             }
             //Then figure out which marker's in use. Center on it and turn blue if it's valid.
-            selectedMarker = locationList().map(function(e) { return e.name }).indexOf(value);
-            if(selectedMarker != -1) {
+            var selectedMarker = locationList().map(function(e) { return e.name; }).indexOf(value);
+            if(selectedMarker !== -1) {
                 changeMarkerColor(locationList()[selectedMarker].locationMarker, "blue");
                 map.setCenter({lat:locationList()[selectedMarker].lat, lng:locationList()[selectedMarker].lng});
                 ViewModel.moveWindow(locationList()[selectedMarker]);
@@ -334,7 +333,7 @@ var ViewModel = {
     closeInfoWindow: function() {
         contentWindow.close();
     }
-}
+};
 
 var View = function () {
 
@@ -349,7 +348,7 @@ var View = function () {
         google.maps.event.addListener(locationMarker, 'click', function() {
             ViewModel.moveWindow(neighborhoodLocation);    
         });
-    }
+    };
 
     changeMarkerColor = function(neighborhoodLocation, color){
         this.neighborhoodLocation = neighborhoodLocation;
@@ -366,8 +365,8 @@ var View = function () {
                 break;
         }
         neighborhoodLocation.setIcon(iconColor);
-    }
+    };
 
-}
+};
 
 })();
