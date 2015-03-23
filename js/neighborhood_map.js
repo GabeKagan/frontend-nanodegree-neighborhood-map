@@ -1,6 +1,4 @@
-//Refactoring's mostly complete. Now add more functionality.
-//Example: Inform the user when the Google APIs appear to be blocked.
-
+//Once the contentString modifying functions are ripped out of moveWindow() and moved into the model, this should be ready for a second submission.
 
 (function() {
 //Globals?
@@ -91,7 +89,6 @@ var Model = function() {
             for(var i = 0; i < listing.length; i++) {
                 var obj = listing[i].data;
                 var title = obj.title;
-                //var subtime = obj.created_utc;
                 var votes = obj.score;
                 var redditurl = "http://www.reddit.com"+obj.permalink;
                 //Create the HTML tags we need
@@ -119,14 +116,12 @@ var Model = function() {
             dataType: "jsonp",
             jsonp: "callback",
             success: function( response ) {
-                //console.log(response);
                 //Variable defines for sanity and overall code readability.
                 var mainArticle = response[1][0];
                 var articleExcerpt = response[2][0];
                 var articleURL = response[3][0];
                 wikiHTML = "<div id='wikiData'><p><a href='" + articleURL + "'>" + mainArticle + "</a> - " +
                     articleExcerpt + "</p>";
-                //console.log(wikiHTML);
 
                 clearTimeout(wikiRequestTimeout);
             },
@@ -147,7 +142,6 @@ var Model = function() {
             if(place.photos !== undefined){
                 photoList = place.photos[0];
                 photoURL = photoList.getUrl({'maxWidth': 200, 'maxHeight': 200});
-                //console.log(photoURL);
                 $("#infoWindow").append('<img src = "' + photoURL + '" alt="Image from Google Places API">');
                 //As part of Google's policies, I am required to show the attribution for these pictures.
                 if(photoList.html_attributions[0] !== undefined){
@@ -229,7 +223,6 @@ var Model = function() {
 };
 
 var ViewModel = {
-    //This might need to be merged into a "controller" with showCorrespondingMarker below.
     //Implementation cribbed from http://opensoul.org/2011/06/23/live-search-with-knockoutjs/
     searchPrompt: ko.observable(''),
     HTMLLocs: ko.observableArray(),
@@ -300,8 +293,6 @@ var ViewModel = {
 
         contentWindow.setContent(contentString);
         contentWindow.setPosition({lat: locationMarker.position.lat(), lng: locationMarker.position.lng()});
-
-        //Maybe hide parts of the translucent UI if the user has an infoWindow open? Not sure.
         contentWindow.open(map);
     },
 
