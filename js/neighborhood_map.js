@@ -1,10 +1,12 @@
 //Refactoring's mostly complete. Now add more functionality.
 //Example: Inform the user when the Google APIs appear to be blocked.
 
+
 (function() {
 //Globals?
 var neighborhoodLocation;
-var locationList, addMarker, iconColor;
+var locationList, addMarker, iconColor; 
+var contentWindow; //This needs to be global to prevent strange issues.
 var listIsSearchable = false;
 
 
@@ -14,16 +16,17 @@ jQuery(function( $ ) {
     var googleAvailabilityPanic = setTimeout(function() {
         $("#searchUI").prepend("<strong>We are unable to load the Google Maps API, which is kind of required for this applet to function properly.</strong>");
     }, 3000);
-    console.log(isGoogleAvailable);
     //But if it does load, we can run this applet normally.
     if(isGoogleAvailable === "object") {
+        contentWindow = new google.maps.InfoWindow({
+            content: "If you see this, something went very wrong.",
+            maxWidth: 240
+        });
         google.maps.event.addDomListener(window, 'load', initialize);
         ko.applyBindings(ViewModel);
         ViewModel.searchPrompt.subscribe(ViewModel.search);
         clearTimeout(googleAvailabilityPanic);
     }
-
-
 }); 
 
 function initialize() {
@@ -43,7 +46,7 @@ function initialize() {
 
     for(var i=0;i<locationList().length;++i)
     {
-        addMarker(locationList()[i]); //Needs scope fixing.
+        addMarker(locationList()[i]); 
     }
 
     ViewModel.populateList();
@@ -279,11 +282,6 @@ var ViewModel = {
         //Makes some AJAX requests.
         getRedditData(neighborhoodLocation);
         getWikipediaPage(neighborhoodLocation);
-
-        var contentWindow = new google.maps.InfoWindow({
-            content: "If you see this, something went very wrong.",
-            maxWidth: 240
-        });
 
         //Data and function for a request to the Google Places API; this also uses AJAX.
         var pictureRequest = {
