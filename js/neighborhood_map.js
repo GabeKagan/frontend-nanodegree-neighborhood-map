@@ -5,17 +5,25 @@
 //Globals?
 var neighborhoodLocation;
 var locationList, addMarker, iconColor;
-var contentWindow = new google.maps.InfoWindow({
-    content: "If you see this, something went very wrong.",
-    maxWidth: 240
-});
 var listIsSearchable = false;
 
 
 jQuery(function( $ ) {
-    google.maps.event.addDomListener(window, 'load', initialize);
-    ko.applyBindings(ViewModel);
-    ViewModel.searchPrompt.subscribe(ViewModel.search);
+    //If Google doesn't load, tell the user so that they don't panic as much.
+    var isGoogleAvailable = typeof google;
+    var googleAvailabilityPanic = setTimeout(function() {
+        $("#searchUI").prepend("<strong>We are unable to load the Google Maps API, which is kind of required for this applet to function properly.</strong>");
+    }, 3000);
+    console.log(isGoogleAvailable);
+    //But if it does load, we can run this applet normally.
+    if(isGoogleAvailable === "object") {
+        google.maps.event.addDomListener(window, 'load', initialize);
+        ko.applyBindings(ViewModel);
+        ViewModel.searchPrompt.subscribe(ViewModel.search);
+        clearTimeout(googleAvailabilityPanic);
+    }
+
+
 }); 
 
 function initialize() {
@@ -271,6 +279,11 @@ var ViewModel = {
         //Makes some AJAX requests.
         getRedditData(neighborhoodLocation);
         getWikipediaPage(neighborhoodLocation);
+
+        var contentWindow = new google.maps.InfoWindow({
+            content: "If you see this, something went very wrong.",
+            maxWidth: 240
+        });
 
         //Data and function for a request to the Google Places API; this also uses AJAX.
         var pictureRequest = {
