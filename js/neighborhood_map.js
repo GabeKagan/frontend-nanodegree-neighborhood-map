@@ -154,6 +154,31 @@ var Model = function() {
         } else { $("#infoWindow").append("<p>It looks like our Google Places API request completely failed! <br> <img id = 'sadFace' src = 'images/sadface.png' alt='Pixelated sad face'></p>"); }
     }, 
 
+    enhanceContent = function(neighborhoodLocation) {
+        var self = this;
+        this.name = neighborhoodLocation.name;
+        this.contentString = neighborhoodLocation.contentString;
+        this.locationMarker = neighborhoodLocation.locationMarker;
+        this.lat = neighborhoodLocation.lat;
+        this.lng = neighborhoodLocation.lng;
+
+        contentString = '<div id="infoWindow"> <p> <strong>Developer&#39;s note:</strong> ' + contentString + '</p> </div>';
+        
+        //Makes some AJAX requests.
+        getRedditData(neighborhoodLocation);
+        getWikipediaPage(neighborhoodLocation);
+
+        //Data and function for a request to the Google Places API; this also uses AJAX.
+        var pictureRequest = {
+            location: {lat: this.lat, lng: this.lng,},
+            radius: '5000',
+            //We need this variable to ensure photos are returned, but the photos aren't very good.
+            name: name,
+        };
+        pictureService.nearbySearch(pictureRequest, getLocalLandmark);
+
+    },
+
     locationList = ko.observableArray([
     new neighborhoodLocation("Boston",42.3283505,-71.0605903,"It's less than an hour away from home!"),
     new neighborhoodLocation("New York",40.7033121,-73.979681,"Only ever been to upstate New York."),
@@ -270,27 +295,15 @@ var ViewModel = {
         lat = neighborhoodLocation.lat;
         lng = neighborhoodLocation.lng;
 
-        contentString = '<div id="infoWindow"> <p> <strong>Developer&#39;s note:</strong> ' + contentString + '</p> </div>';
-
-        //Makes some AJAX requests.
-        getRedditData(neighborhoodLocation);
-        getWikipediaPage(neighborhoodLocation);
-
-        //Data and function for a request to the Google Places API; this also uses AJAX.
-        var pictureRequest = {
-            location: {lat: lat, lng: lng,},
-            radius: '5000',
-            //We need this variable to ensure photos are returned, but the photos aren't very good.
-            name: name,
-        };
-        pictureService.nearbySearch(pictureRequest, getLocalLandmark);
+        //enhanceContent calls the HTML appends and AJAX pulls that were here before.
+        //Functionally, it's identical, but 
+        enhanceContent(neighborhoodLocation);
         
         //The infoWindow should be wider on a wider display.
         if( $(window).width() >= 640) {
             contentWindow.maxWidth = 360;
         } else { contentWindow.maxWidth = 240; }
         
-
         contentWindow.setContent(contentString);
         contentWindow.setPosition({lat: locationMarker.position.lat(), lng: locationMarker.position.lng()});
         contentWindow.open(map);
