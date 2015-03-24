@@ -1,12 +1,12 @@
-//Once the contentString modifying functions are ripped out of moveWindow() and moved into the model, this should be ready for a second submission.
+/* Main (custom) code for "Tour the World", my implementation of project 5 
+in the Udacity Front End Web Developer Nanodegree (as of March 2015).
+Reliant on jQuery 2.1.3, KnockoutJS 3.2.0, and Google Maps API v3.
+*/
 
 (function() {
-//Globals?
-var neighborhoodLocation;
-var locationList, addMarker, iconColor; 
-var contentWindow; //This needs to be global to prevent strange issues.
+//Defining some global variables.
+var neighborhoodLocation, locationList, contentWindow;
 var listIsSearchable = false;
-
 
 jQuery(function( $ ) {
     //If Google doesn't load, tell the user so that they don't panic as much.
@@ -272,7 +272,7 @@ var ViewModel = {
         }
         if(value !== ""){
 
-            for(var i in locationList()) 
+            for(i in locationList()) 
             {
                 if(listIsSearchable === true){
                     if(locationList()[i].name.toLowerCase().indexOf(value.toLowerCase()) >= 0){
@@ -294,7 +294,6 @@ var ViewModel = {
 
     //moveWindow gets the content and position from the location, and attaches to the marker.
     moveWindow: function(neighborhoodLocation) {
-        name = neighborhoodLocation.name;
         contentString = neighborhoodLocation.contentString;
         locationMarker = neighborhoodLocation.locationMarker;
         lat = neighborhoodLocation.lat;
@@ -373,6 +372,7 @@ var View = function () {
     changeMarkerColor = function(neighborhoodLocation, color){
         this.neighborhoodLocation = neighborhoodLocation;
         this.locationMarker = neighborhoodLocation.locationMarker;
+        var iconColor = 'images/red-dot.png';
         switch(color) {
             case "red": //Location is not "selected" in any fashion
                 iconColor = 'images/red-dot.png';

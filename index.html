@@ -8,7 +8,7 @@
     <link rel="stylesheet" media="screen and (min-width: 641px)" href="css/map.css">
     <link rel="stylesheet" media="screen and (max-width: 640px)" href="css/mobile.css"> 
 
-    <script src="https://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyCeG1ftdGJnxx6m8lN_qrS1NrOIoXD1Vz4"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?libraries=places&amp;key=AIzaSyCeG1ftdGJnxx6m8lN_qrS1NrOIoXD1Vz4"></script>
     <script src="js/knockout-3.2.0.js"></script>
     <script src="js/jquery-2.1.3.min.js"></script>
     <!--Usercode starts here-->
@@ -27,7 +27,7 @@
             </div>
             <br>
             <div id="locationListDisplay">
-                <select id="locationOptions" multiple="false" width="50" data-bind="value: highlightedLocation, options:HTMLLocs(), optionsCaption:'Results will show up when you start searching.', click:goToMarker(highlightedLocation())"></select>
+                <select id="locationOptions" multiple data-bind="value: highlightedLocation, options:HTMLLocs(), optionsCaption:'Results will show up when you start searching.', click:goToMarker(highlightedLocation())"> </select>
             </div>
             <script type="text/html" id="filteredLocations">
                 <li>
