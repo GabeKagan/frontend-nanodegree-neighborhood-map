@@ -24,7 +24,7 @@
             </div>
             <br>
             <div id="locationListDisplay">
-                <select id="locationOptions" multiple="false" width="50" data-bind="value: highlightedLocation, options:HTMLLocs(), optionsCaption:'Results will show up when you start searching.', click:goToMarker(highlightedLocation())"></select>
+                <select id="locationOptions" multiple data-bind="value: highlightedLocation, options:HTMLLocs(), optionsCaption:'Results will show up when you start searching.', click:goToMarker(highlightedLocation())"> </select>
             </div>
             <script type="text/html" id="filteredLocations">
                 <li>
