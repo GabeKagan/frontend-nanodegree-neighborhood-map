@@ -106,6 +106,9 @@ var Model = function() {
         this.name = NEIGHBORHOODLOCATION.name;
         wikiHTML = "";
         var wikiUrl = 'http://en.wikipedia.org/w/api.php?action=opensearch&search=' + name + '&format=json&callback=wikiCallback';
+        var wikiRequestTimeout = setTimeout(function(){
+            wikiHTML = "Sorry, we didn't manage to get a Wikipedia page for this place.";
+        }, 8000);
         $.ajax({
             url: wikiUrl,
             dataType: "jsonp",
@@ -383,7 +386,5 @@ var View = function () {
     };
 
 };
-
-})();
 
 })();
