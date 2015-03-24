@@ -283,6 +283,11 @@ var ViewModel = {
                     ViewModel.HTMLLocs.push(locationList()[i].name);
                 }
             }
+        } else { 
+            //This code keeps the listmode from depopulating when the search prompt is empty.
+            if(listIsSearchable === false){
+                ViewModel.populateList();
+            }
         }
         
     },
