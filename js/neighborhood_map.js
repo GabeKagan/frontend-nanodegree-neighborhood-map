@@ -1,23 +1,30 @@
-//Refactoring's mostly complete. Now add more functionality.
-//Example: Inform the user when the Google APIs appear to be blocked.
+/* Main (custom) code for "Tour the World", my implementation of project 5 
+in the Udacity Front End Web Developer Nanodegree (as of March 2015).
+Reliant on jQuery 2.1.3, KnockoutJS 3.2.0, and Google Maps API v3.
+*/
 
 (function() {
-//Globals?
-var neighborhoodLocation;
-var locationList;
-var addMarker;
-var contentWindow = new google.maps.InfoWindow({
-    content: "If you see this, something went very wrong.",
-    maxWidth: 240
-});
+//Defining some global variables.
+var neighborhoodLocation, locationList, contentWindow;
 var listIsSearchable = false;
-//var contentString;
-
 
 jQuery(function( $ ) {
-    google.maps.event.addDomListener(window, 'load', initialize);
-    ko.applyBindings(ViewModel);
-    ViewModel.searchPrompt.subscribe(ViewModel.search);
+    //If Google doesn't load, tell the user so that they don't panic as much.
+    var isGoogleAvailable = typeof google;
+    var googleAvailabilityPanic = setTimeout(function() {
+        $("#searchUI").prepend("<strong>We are unable to load the Google Maps API, which is kind of required for this applet to function properly.</strong>");
+    }, 3000);
+    //But if it does load, we can run this applet normally.
+    if(isGoogleAvailable === "object") {
+        contentWindow = new google.maps.InfoWindow({
+            content: "If you see this, something went very wrong.",
+            maxWidth: 240
+        });
+        google.maps.event.addDomListener(window, 'load', initialize);
+        ko.applyBindings(ViewModel);
+        ViewModel.searchPrompt.subscribe(ViewModel.search);
+        clearTimeout(googleAvailabilityPanic);
+    }
 }); 
 
 function initialize() {
@@ -37,7 +44,7 @@ function initialize() {
 
     for(var i=0;i<locationList().length;++i)
     {
-        addMarker(locationList()[i]); //Needs scope fixing.
+        addMarker(locationList()[i]); 
     }
 
     ViewModel.populateList();
@@ -82,18 +89,17 @@ var Model = function() {
             for(var i = 0; i < listing.length; i++) {
                 var obj = listing[i].data;
                 var title = obj.title;
-                //var subtime = obj.created_utc;
                 var votes = obj.score;
                 var redditurl = "http://www.reddit.com"+obj.permalink;
                 //Create the HTML tags we need
                 redditConstructor += '<li class="redditLink"><a href="' + redditurl +'">' + title + '</a></li>';
                 
             }
-            if(redditConstructor == "") { redditConstructor = "We didn't find anything about " + name + " on /r/travel. Perhaps people just aren't interested?"}
+            if(redditConstructor === "") { redditConstructor = "We didn't find anything about " + name + " on /r/travel. Perhaps people just aren't interested?"; }
             //At the end of the function, either send our shiny HTML to Knockout or inform the user the AJAX request failed.
         }).done(function() { ViewModel.redditHTML(redditConstructor); 
         }).error(function() { 
-            ViewModel.redditHTML("<p>Unable to get any response from Reddit at all. This could be caused by, amongst other things, Reddit going down in flames. <br> <img id = 'sadFace' src = 'images/sadface.png' alt='Pixelated sad face'> </p>") 
+            ViewModel.redditHTML("<p>Unable to get any response from Reddit at all. This could be caused by, amongst other things, Reddit going down in flames. <br> <img id = 'sadFace' src = 'images/sadface.png' alt='Pixelated sad face'> </p>"); 
         });
     },
 
@@ -110,14 +116,12 @@ var Model = function() {
             dataType: "jsonp",
             jsonp: "callback",
             success: function( response ) {
-                //console.log(response);
                 //Variable defines for sanity and overall code readability.
                 var mainArticle = response[1][0];
                 var articleExcerpt = response[2][0];
                 var articleURL = response[3][0];
                 wikiHTML = "<div id='wikiData'><p><a href='" + articleURL + "'>" + mainArticle + "</a> - " +
                     articleExcerpt + "</p>";
-                //console.log(wikiHTML);
 
                 clearTimeout(wikiRequestTimeout);
             },
@@ -135,13 +139,12 @@ var Model = function() {
             var place = results[0];
             //If we get a place and a photo at all, then it's time to construct a request and add it to the page.
             //See https://developers.google.com/places/documentation/photos.
-            if(place.photos != undefined){
+            if(place.photos !== undefined){
                 photoList = place.photos[0];
                 photoURL = photoList.getUrl({'maxWidth': 200, 'maxHeight': 200});
-                //console.log(photoURL);
-                $("#infoWindow").append('<img src = "' + photoURL + '" alt="Image from Google Places API">')
+                $("#infoWindow").append('<img src = "' + photoURL + '" alt="Image from Google Places API">');
                 //As part of Google's policies, I am required to show the attribution for these pictures.
-                if(photoList.html_attributions[0] != undefined){
+                if(photoList.html_attributions[0] !== undefined){
                     $("#infoWindow").append('<p>Source: ' + photoList.html_attributions[0] + '</p>');
                 } else {$("#infoWindow").append("<p>Google Places has no attribution information for this picture.</p>");}
 
@@ -150,6 +153,31 @@ var Model = function() {
         //If the request is completely unsuccessful, inform the user of our humiliation.
         } else { $("#infoWindow").append("<p>It looks like our Google Places API request completely failed! <br> <img id = 'sadFace' src = 'images/sadface.png' alt='Pixelated sad face'></p>"); }
     }, 
+
+    enhanceContent = function(neighborhoodLocation) {
+        var self = this;
+        this.name = neighborhoodLocation.name;
+        this.contentString = neighborhoodLocation.contentString;
+        this.locationMarker = neighborhoodLocation.locationMarker;
+        this.lat = neighborhoodLocation.lat;
+        this.lng = neighborhoodLocation.lng;
+
+        contentString = '<div id="infoWindow"> <p> <strong>Developer&#39;s note:</strong> ' + contentString + '</p> </div>';
+        
+        //Makes some AJAX requests.
+        getRedditData(neighborhoodLocation);
+        getWikipediaPage(neighborhoodLocation);
+
+        //Data and function for a request to the Google Places API; this also uses AJAX.
+        var pictureRequest = {
+            location: {lat: this.lat, lng: this.lng,},
+            radius: '5000',
+            //We need this variable to ensure photos are returned, but the photos aren't very good.
+            name: name,
+        };
+        pictureService.nearbySearch(pictureRequest, getLocalLandmark);
+
+    },
 
     locationList = ko.observableArray([
     new neighborhoodLocation("Boston",42.3283505,-71.0605903,"It's less than an hour away from home!"),
@@ -217,10 +245,9 @@ var Model = function() {
     new neighborhoodLocation("Ulaanbaatar",47.8916501,106.9018714,"One of the many cities whose name improved over time.")
     ]);
 
-}
+};
 
 var ViewModel = {
-    //This might need to be merged into a "controller" with showCorrespondingMarker below.
     //Implementation cribbed from http://opensoul.org/2011/06/23/live-search-with-knockoutjs/
     searchPrompt: ko.observable(''),
     HTMLLocs: ko.observableArray(),
@@ -243,9 +270,9 @@ var ViewModel = {
         {
             changeMarkerColor(locationList()[i].locationMarker, "red");
         }
-        if(value != ""){
+        if(value !== ""){
 
-            for(var i in locationList()) 
+            for(i in locationList()) 
             {
                 if(listIsSearchable === true){
                     if(locationList()[i].name.toLowerCase().indexOf(value.toLowerCase()) >= 0){
@@ -256,41 +283,32 @@ var ViewModel = {
                     ViewModel.HTMLLocs.push(locationList()[i].name);
                 }
             }
+        } else { 
+            //This code keeps the listmode from depopulating when the search prompt is empty.
+            if(listIsSearchable === false){
+                ViewModel.populateList();
+            }
         }
         
     },
 
     //moveWindow gets the content and position from the location, and attaches to the marker.
     moveWindow: function(neighborhoodLocation) {
-        name = neighborhoodLocation.name;
         contentString = neighborhoodLocation.contentString;
         locationMarker = neighborhoodLocation.locationMarker;
         lat = neighborhoodLocation.lat;
         lng = neighborhoodLocation.lng;
 
-        contentString = '<div id="infoWindow"> <p> <strong>Developer&#39;s note:</strong> ' + contentString + '</p> </div>';
-
-        //Makes some AJAX requests.
-        getRedditData(neighborhoodLocation);
-        getWikipediaPage(neighborhoodLocation);
-
-        //Data and function for a request to the Google Places API; this also uses AJAX.
-        var pictureRequest = {
-            location: {lat: lat, lng: lng,},
-            radius: '5000',
-            //We need this variable to ensure photos are returned, but the photos aren't very good.
-            name: name,
-        }
-        pictureService.nearbySearch(pictureRequest, getLocalLandmark);
+        //enhanceContent calls the HTML appends and AJAX pulls that were here before.
+        //Functionally, it's identical, but 
+        enhanceContent(neighborhoodLocation);
         
         //The infoWindow should be wider on a wider display.
         if( $(window).width() >= 640) {
             contentWindow.maxWidth = 360;
         } else { contentWindow.maxWidth = 240; }
         
-
         contentWindow.setContent(contentString);
-        //Why doesn't this use the lat and lng we get? Check on this.
         contentWindow.setPosition({lat: locationMarker.position.lat(), lng: locationMarker.position.lng()});
         contentWindow.open(map);
     },
@@ -298,15 +316,15 @@ var ViewModel = {
     goToMarker: function(value){
         //Formerly showCorrespondingMarker(), but refactored for KnockoutJS. 
         //Runs if anything is selected in the search-generated list.
-        if(value != undefined) {
+        if(value !== undefined) {
             //Start by resetting the coloration of all the markers.
             for(var i in locationList())
             {
                 changeMarkerColor(locationList()[i].locationMarker, "red");
             }
             //Then figure out which marker's in use. Center on it and turn blue if it's valid.
-            selectedMarker = locationList().map(function(e) { return e.name }).indexOf(value);
-            if(selectedMarker != -1) {
+            var selectedMarker = locationList().map(function(e) { return e.name; }).indexOf(value);
+            if(selectedMarker !== -1) {
                 changeMarkerColor(locationList()[selectedMarker].locationMarker, "blue");
                 map.setCenter({lat:locationList()[selectedMarker].lat, lng:locationList()[selectedMarker].lng});
                 ViewModel.moveWindow(locationList()[selectedMarker]);
@@ -334,7 +352,7 @@ var ViewModel = {
     closeInfoWindow: function() {
         contentWindow.close();
     }
-}
+};
 
 var View = function () {
 
@@ -349,11 +367,12 @@ var View = function () {
         google.maps.event.addListener(locationMarker, 'click', function() {
             ViewModel.moveWindow(neighborhoodLocation);    
         });
-    }
+    };
 
     changeMarkerColor = function(neighborhoodLocation, color){
         this.neighborhoodLocation = neighborhoodLocation;
         this.locationMarker = neighborhoodLocation.locationMarker;
+        var iconColor = 'images/red-dot.png';
         switch(color) {
             case "red": //Location is not "selected" in any fashion
                 iconColor = 'images/red-dot.png';
@@ -366,8 +385,8 @@ var View = function () {
                 break;
         }
         neighborhoodLocation.setIcon(iconColor);
-    }
+    };
 
-}
+};
 
 })();

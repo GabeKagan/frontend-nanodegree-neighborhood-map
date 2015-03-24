@@ -5,5 +5,5 @@ html, body {
 #searchUI {
     width: 98%;
     left: 1px;
-
+    bottom: 10px;
 }
